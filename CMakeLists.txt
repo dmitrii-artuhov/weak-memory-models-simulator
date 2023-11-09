@@ -22,6 +22,14 @@ set(SIMULATOR_SRCS
     src/file-reader/file-reader.h
 
     src/exceptions/exceptions.h
+
+    src/lexer/lexer.cpp
+    src/lexer/lexer.h
+    
+    src/lexer/token.cpp
+    src/lexer/token.h
+
+    src/utils/utils.h
 )
 
 set(TESTS_SRCS
