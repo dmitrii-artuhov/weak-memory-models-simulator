@@ -14,7 +14,7 @@ public:
 
 private:
     const char* m_program_ptr = nullptr;
-    Position m_current_position;
+    Position m_current_position = {0, 0, 0};
     
 
     char peek() const;

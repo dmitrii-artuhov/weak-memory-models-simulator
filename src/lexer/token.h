@@ -38,6 +38,8 @@ public:
     bool is_one_of(Type t1, Type t2) const;
     std::string get_readable_type() const;
     Position get_start_position() const;
+    size_t get_length() const;
+    Type get_type() const;
 
     template <typename... Ts>
     bool is_one_of(Type t1, Type t2, Ts... ts) const {
@@ -57,8 +59,15 @@ inline std::ostream& operator<<(std::ostream& os, const Position& pos) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, const Token& token) {
-    os << "Token(" << token.get_readable_type() << ", '" << token.get_lexeme() << "', " << token.get_start_position() <<  ")";
+    os << "Token(" << token.get_readable_type() << ", '" << token.get_lexeme() << "', len: " << token.get_length() << ", " << token.get_start_position() <<  ")";
     return os;
 }
 
+inline bool operator==(const Position& p1, const Position& p2) {
+    return (
+        p1.index == p2.index &&
+        p1.column == p2.column &&
+        p1.line == p2.line
+    );
+}
 }

@@ -26,8 +26,6 @@ char Lexer::peek() const {
 }
 
 void Lexer::advance() {
-    m_program_ptr++;
-
     if (utils::is_newline(peek())) {
         m_current_position.line++;
         m_current_position.column = 0;
@@ -37,6 +35,8 @@ void Lexer::advance() {
     }
 
     m_current_position.index++;
+    
+    m_program_ptr++;
 }
 
 Token Lexer::get_next_token() {

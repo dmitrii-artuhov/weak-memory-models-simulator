@@ -33,7 +33,8 @@ set(SIMULATOR_SRCS
 )
 
 set(TESTS_SRCS
-    tests/initial-test.cpp
+    tests/test-lexer.cpp
+    ${SIMULATOR_SRCS}
 )
 
 #### configuring SIMULATOR_TARGET
@@ -54,4 +55,5 @@ add_executable(${TESTS_TARGET}
 
 target_include_directories(${TESTS_TARGET} PUBLIC
     ./doctest
+    src
 )

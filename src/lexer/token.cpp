@@ -20,6 +20,10 @@ bool Token::is_one_of(Type t1, Type t2) const {
     return is(t1) || is(t2);
 }
 
+Token::Type Token::get_type() const {
+    return m_type;
+}
+
 std::string Token::get_readable_type() const {
     switch (m_type) {
         case Type::IDENTIFIER: return "IDENTIFIER";
@@ -39,6 +43,10 @@ std::string Token::get_readable_type() const {
 
 Position Token::get_start_position() const {
     return m_start_pos;
+}
+
+size_t Token::get_length() const {
+    return m_len;
 }
 
 }
