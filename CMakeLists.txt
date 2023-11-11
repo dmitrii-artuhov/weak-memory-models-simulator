@@ -22,6 +22,11 @@ set(SIMULATOR_SRCS
     src/file-reader/file-reader.h
 
     src/exceptions/exceptions.h
+    
+    src/utils/utils.h
+
+    src/parser/parser.cpp
+    src/parser/parser.h
 
     src/lexer/lexer.cpp
     src/lexer/lexer.h
@@ -29,7 +34,26 @@ set(SIMULATOR_SRCS
     src/lexer/token.cpp
     src/lexer/token.h
 
-    src/utils/utils.h
+    src/lang/keywords.h
+    src/lang/memory-order.h
+
+    # ast nodes
+    src/ast/node.h
+
+    src/ast/program/program.cpp
+    src/ast/program/program.h
+
+    src/ast/assignment/assignment.cpp
+    src/ast/assignment/assignment.h
+
+    src/ast/binop/binop.cpp
+    src/ast/binop/binop.h
+
+    src/ast/number/number.cpp
+    src/ast/number/number.h
+
+    src/ast/condition/condition.cpp
+    src/ast/condition/condition.h
 )
 
 set(TESTS_SRCS

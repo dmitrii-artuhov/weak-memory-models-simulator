@@ -27,14 +27,28 @@ Token::Type Token::get_type() const {
 std::string Token::get_readable_type() const {
     switch (m_type) {
         case Type::IDENTIFIER: return "IDENTIFIER";
+        case Type::LOCATION: return "LOCATION";
+        
         case Type::NUMBER: return "NUMBER";
+
         case Type::EQ: return "EQ";
         case Type::PLUS: return "PLUS";
         case Type::MINUS: return "MINUS";
         case Type::MULT: return "MULT";
         case Type::DIV: return "DIV";
         case Type::SEMICOLON: return "SEMICOLON";
-        case Type::HASHTAG: return "HASHTAG";
+        
+        case Type::CONDITION: return "CONDITION";
+        case Type::GOTO: return "GOTO";
+        case Type::THREAD_GOTO: return "THREAD_GOTO";
+        case Type::MEMORY_ORDER: return "MEMORY_ORDER";
+
+        case Type::LOAD: return "LOAD";
+        case Type::STORE: return "STORE";
+        case Type::CAS: return "CAS";
+        case Type::FAI: return "FAI";
+        case Type::FENCE: return "FENCE";
+
         case Type::END: return "END";
         case Type::UNEXPECTED: return "UNEXPECTED";
         default: return "unreachable";

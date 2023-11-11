@@ -19,9 +19,11 @@ private:
 
     char peek() const;
     void advance();
+    void skip_blank();
     Token get_next_token();
     Token get_number_token();
-    Token get_identifier_token();
+    Token get_keyword_or_identifier_token();
+    Token get_location_token();
     Token get_atom_token(Token::Type type);
 
     friend std::ostream& operator<<(std::ostream&, const Token&);

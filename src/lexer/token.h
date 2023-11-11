@@ -14,19 +14,28 @@ struct Position {
 class Token {
 public:
     enum class Type {
-        IDENTIFIER,
+        IDENTIFIER, // register or label
+        LOCATION,
         NUMBER,
+        
         EQ,
         PLUS,
         MINUS,
         MULT,
         DIV,
-        // GOTO,
-        // THREAD_GOTO,
-        // IF,
-        // LABEL,
         SEMICOLON,
-        HASHTAG,
+
+        CONDITION,
+        GOTO,
+        THREAD_GOTO,
+        MEMORY_ORDER,
+
+        LOAD,
+        STORE,
+        CAS,
+        FAI,
+        FENCE,
+        
         END,
         UNEXPECTED
     };

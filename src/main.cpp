@@ -5,6 +5,7 @@
 #include "file-reader/file-reader.h"
 #include "lexer/token.h"
 #include "lexer/lexer.h"
+#include "parser/parser.h"
 
 int main(int argc, char* argv[]) {
     using namespace wmm_simulator;
@@ -32,6 +33,8 @@ int main(int argc, char* argv[]) {
         for (auto& token : tokens) {
             std::cout << token << std::endl;
         }
+
+        Parser parser(lexer.get_tokens());
     }
     catch(const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;
