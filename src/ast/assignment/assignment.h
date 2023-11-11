@@ -10,7 +10,7 @@ namespace wmm_simulator {
 
 class AssignmentNode final : public AstNode {
 public:
-    AssignmentNode(std::string&& register_name, std::shared_ptr<AstNode> expr);
+    AssignmentNode(std::string register_name, std::shared_ptr<AstNode> expr);
     void accept() override;
     ~AssignmentNode() {
         // TODO: remove

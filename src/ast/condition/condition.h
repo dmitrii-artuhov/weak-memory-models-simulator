@@ -9,7 +9,7 @@ namespace wmm_simulator {
 
 class ConditionNode final : public AstNode {
 public:
-    ConditionNode(std::string&& register_name, std::string&& goto_label);
+    ConditionNode(std::string register_name, std::string goto_label);
     void accept() override;
     ~ConditionNode() {
         // TODO: remove

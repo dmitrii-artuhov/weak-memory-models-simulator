@@ -7,25 +7,21 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 
-int main(int argc, char* argv[]) {
+int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
     using namespace wmm_simulator;
     
     try {
-        if (argc != 2) {
-            throw exceptions::invalid_arguments("USAGE: " + std::string(argv[0]) + " [path/to/program]");
-        }
+        // if (argc != 2) {
+        //     throw exceptions::invalid_arguments("USAGE: " + std::string(argv[0]) + " [path/to/program]");
+        // }
     
-        std::string program_path = argv[1];
-        std::string program_text = fs::FileReader::read_file(program_path);
+        // std::string program_path = argv[1];
+        // std::string program_text = fs::FileReader::read_file(program_path);
 
-        std::cout << "Program text: \n" << program_text << std::endl;
+        // std::cout << "Program text: \n" << program_text << std::endl;
 
         std::string code =
-        "r = 1\n"
-        "r1 = r2 + 100\n"
-        "store   \t SQ #r1 r2\n"
-        "L1: fence SQ\n"
-        "";
+        "r = 1\n";
 
         Lexer lexer(code.c_str());
         std::vector <Token> tokens = lexer.get_tokens();
@@ -34,7 +30,10 @@ int main(int argc, char* argv[]) {
             std::cout << token << std::endl;
         }
 
-        Parser parser(lexer.get_tokens());
+        std::cout << std::endl << "Parsing:" << std::endl;
+
+        Parser parser(tokens);
+        std::shared_ptr<AstNode> ast = parser.parse();
     }
     catch(const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;

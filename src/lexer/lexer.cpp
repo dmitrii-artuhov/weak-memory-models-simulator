@@ -9,15 +9,17 @@
 
 namespace wmm_simulator {
 
-Lexer::Lexer(const char* program_ptr): m_program_ptr(program_ptr) {}
+Lexer::Lexer(const char* program_ptr): m_program_start(program_ptr) {}
 
 std::vector <Token> Lexer::get_tokens() {
+    m_program_ptr = m_program_start;
+    m_current_position = Position{0, 0, 0};
     std::vector <Token> result;
     
     do {
         result.push_back(get_next_token());
     }
-    while (!result.back().is_one_of(Token::Type::END, Token::Type::UNEXPECTED));
+    while (!result.back().is_one_of(Token::Type::END, Token::Type::INVALID));
 
     return result;
 }
@@ -82,7 +84,7 @@ Token Lexer::get_next_token() {
         return get_location_token();
     }
     else {
-        return get_atom_token(Token::Type::UNEXPECTED);
+        return get_atom_token(Token::Type::INVALID);
     }
 }
 
@@ -154,7 +156,7 @@ Token Lexer::get_keyword_or_identifier_token() {
 
 Token Lexer::get_location_token() {
     if (!utils::is_identifier_char(peek())) {
-        return get_atom_token(Token::Type::UNEXPECTED);
+        return get_atom_token(Token::Type::INVALID);
     }
 
     const char* lexeme_start = m_program_ptr;

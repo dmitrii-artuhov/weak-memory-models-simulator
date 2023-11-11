@@ -25,7 +25,11 @@ Token::Type Token::get_type() const {
 }
 
 std::string Token::get_readable_type() const {
-    switch (m_type) {
+    return Token::to_readable_type(m_type);
+}
+
+std::string Token::to_readable_type(Type type) {
+    switch (type) {
         case Type::IDENTIFIER: return "IDENTIFIER";
         case Type::LOCATION: return "LOCATION";
         
@@ -50,7 +54,7 @@ std::string Token::get_readable_type() const {
         case Type::FENCE: return "FENCE";
 
         case Type::END: return "END";
-        case Type::UNEXPECTED: return "UNEXPECTED";
+        case Type::INVALID: return "INVALID";
         default: return "unreachable";
     }
 }

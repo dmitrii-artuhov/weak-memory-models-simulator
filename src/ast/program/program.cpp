@@ -4,7 +4,7 @@ namespace wmm_simulator {
 
 // ProgramNode
 ProgramNode::ProgramNode(
-    std::vector<std::shared_ptr<AstNode>>&& statements
+    std::vector<std::shared_ptr<StatementNode>> statements
 ): m_statements(std::move(statements)) {}
 
 void ProgramNode::accept() {

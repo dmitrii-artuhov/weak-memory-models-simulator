@@ -42,6 +42,9 @@ set(SIMULATOR_SRCS
 
     src/ast/program/program.cpp
     src/ast/program/program.h
+    
+    src/ast/statement/statement.cpp
+    src/ast/statement/statement.h
 
     src/ast/assignment/assignment.cpp
     src/ast/assignment/assignment.h
@@ -54,6 +57,24 @@ set(SIMULATOR_SRCS
 
     src/ast/condition/condition.cpp
     src/ast/condition/condition.h
+    
+    src/ast/load/load.cpp
+    src/ast/load/load.h
+    
+    src/ast/store/store.cpp
+    src/ast/store/store.h
+    
+    src/ast/cas/cas.cpp
+    src/ast/cas/cas.h
+    
+    src/ast/fai/fai.cpp
+    src/ast/fai/fai.h
+
+    src/ast/fence/fence.cpp
+    src/ast/fence/fence.h
+    
+    src/ast/end/end.cpp
+    src/ast/end/end.h
 )
 
 set(TESTS_SRCS

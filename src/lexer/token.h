@@ -9,6 +9,10 @@ struct Position {
     size_t index; // global start of the token
     size_t column; // start of the token in line
     size_t line; // number of line
+
+    std::string as_string() const {
+        return "(index: " + std::to_string(index) + ", column: " + std::to_string(column) + ", line: " + std::to_string(line) + ")";
+    } 
 };
     
 class Token {
@@ -37,7 +41,7 @@ public:
         FENCE,
         
         END,
-        UNEXPECTED
+        INVALID
     };
 
     Token(Type type, Position pos);
@@ -46,6 +50,7 @@ public:
     bool is(Type type) const;
     bool is_one_of(Type t1, Type t2) const;
     std::string get_readable_type() const;
+    static std::string to_readable_type(Type type);
     Position get_start_position() const;
     size_t get_length() const;
     Type get_type() const;
@@ -63,7 +68,7 @@ private:
 };
 
 inline std::ostream& operator<<(std::ostream& os, const Position& pos) {
-    os << "Position(index: " << pos.index << ", col: " << pos.column << ", line: " << pos.line << ")";
+    os << "Position" << pos.as_string();
     return os;
 }
 

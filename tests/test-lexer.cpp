@@ -27,7 +27,7 @@ static void check_lexer_result(const std::string& code, const std::vector <Token
 
 
 
-TEST_CASE("Lexer: test assignments") {
+TEST_CASE("Lexer: assignments") {
     std::string code =
         "r = 100\n"
         "r1 = r+1\n";
@@ -47,7 +47,7 @@ TEST_CASE("Lexer: test assignments") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test empty code") {
+TEST_CASE("Lexer: empty code") {
     
 
     std::string code = "";
@@ -59,7 +59,7 @@ TEST_CASE("Lexer: test empty code") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test shifted empty code") {
+TEST_CASE("Lexer: shifted empty code") {
     
 
     std::string code = "\n\t\n";
@@ -71,7 +71,7 @@ TEST_CASE("Lexer: test shifted empty code") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test location") {
+TEST_CASE("Lexer: location") {
     
 
     std::string code = "r #loc";
@@ -85,7 +85,7 @@ TEST_CASE("Lexer: test location") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test plus operation") {
+TEST_CASE("Lexer: plus operation") {
     std::string code =
         "r1=r2+r3\n";
 
@@ -101,7 +101,7 @@ TEST_CASE("Lexer: test plus operation") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test minus operation") {
+TEST_CASE("Lexer: minus operation") {
     
 
     std::string code =
@@ -119,7 +119,7 @@ TEST_CASE("Lexer: test minus operation") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test mult operation") {
+TEST_CASE("Lexer: mult operation") {
     
 
     std::string code =
@@ -137,7 +137,7 @@ TEST_CASE("Lexer: test mult operation") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test div operation") {
+TEST_CASE("Lexer: div operation") {
     
 
     std::string code =
@@ -155,7 +155,7 @@ TEST_CASE("Lexer: test div operation") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test condition") {
+TEST_CASE("Lexer: condition") {
     
 
     std::string code = "if r goto L";
@@ -171,7 +171,7 @@ TEST_CASE("Lexer: test condition") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test goto & thread_goto") {
+TEST_CASE("Lexer: goto & thread_goto") {
     
 
     std::string code =
@@ -197,7 +197,7 @@ TEST_CASE("Lexer: test goto & thread_goto") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test memory orders") {
+TEST_CASE("Lexer: memory orders") {
     std::string code = "SEQ_CST REL ACQ REL_ACQ RLX";
 
     std::vector <Token> expected = {
@@ -212,7 +212,7 @@ TEST_CASE("Lexer: test memory orders") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test keywords") {
+TEST_CASE("Lexer: keywords") {
     std::string code = "load store cas fai fence";
 
     std::vector <Token> expected = {
@@ -227,7 +227,7 @@ TEST_CASE("Lexer: test keywords") {
     check_lexer_result(code, expected);
 }
 
-TEST_CASE("Lexer: test code with unexpected token") {
+TEST_CASE("Lexer: code with invalid token") {
     
 
     std::string code =
@@ -242,7 +242,7 @@ TEST_CASE("Lexer: test code with unexpected token") {
         Token(Token::Type::MEMORY_ORDER, code.c_str() + 12, 7, Position{12, 6, 1}),
         Token(Token::Type::LOCATION, code.c_str() + 21, 1, Position{21, 15, 1}),
         Token(Token::Type::IDENTIFIER, code.c_str() + 23, 1, Position{23, 17, 1}),
-        Token(Token::Type::UNEXPECTED, code.c_str() + 24, 1, Position{24, 18, 1})
+        Token(Token::Type::INVALID, code.c_str() + 24, 1, Position{24, 18, 1})
     };
 
     check_lexer_result(code, expected);

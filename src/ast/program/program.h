@@ -1,5 +1,4 @@
 #pragma once
-#include "program.h"
 
 #include <iostream>
 #include <vector>
@@ -7,12 +6,13 @@
 #include <memory>
 
 #include "ast/node.h"
+#include "ast/statement/statement.h"
 
 namespace wmm_simulator {
 
 class ProgramNode final : public AstNode {
 public:
-    ProgramNode(std::vector<std::shared_ptr<AstNode>>&& statements);
+    ProgramNode(std::vector<std::shared_ptr<StatementNode>> statements);
     void accept() override;
     ~ProgramNode() {
         // TODO: remove
@@ -20,7 +20,7 @@ public:
     }
 
 private:
-    std::vector <std::shared_ptr<AstNode>> m_statements;
+    std::vector <std::shared_ptr<StatementNode>> m_statements;
 };
 
 

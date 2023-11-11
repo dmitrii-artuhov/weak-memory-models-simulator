@@ -11,7 +11,7 @@ namespace wmm_simulator {
 
 // AssignmentNode
 AssignmentNode::AssignmentNode(
-    std::string&& register_name,
+    std::string register_name,
     std::shared_ptr<AstNode> expr
 ): m_register_name(std::move(register_name)), m_expr(expr) {}
 

@@ -17,7 +17,7 @@ public:
         DIV
     };
 
-    BinOpNode(std::string&& left_register, Type operation, std::string&& right_register);
+    BinOpNode(std::string left_register, Type operation, std::string right_register);
     void accept() override;
     ~BinOpNode() {
         // TODO: remove

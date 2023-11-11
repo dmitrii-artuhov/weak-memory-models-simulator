@@ -13,6 +13,7 @@ public:
     std::vector <Token> get_tokens();
 
 private:
+    const char* const m_program_start = nullptr;
     const char* m_program_ptr = nullptr;
     Position m_current_position = {0, 0, 0};
     
