@@ -1,3 +1,3 @@
-# Weak Memory Models simulator
+# Weak memory models simulator
 
 To be continued...
