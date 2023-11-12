@@ -18,7 +18,7 @@ public:
         std::string register_expected,
         std::string register_desired
     );
-    void accept() override;
+    void accept(const Visitor* visitor) const override;
     ~CasNode() {
         // TODO: remove
         std::cout << "~CasNode()" << std::endl;

@@ -11,7 +11,7 @@ namespace wmm_simulator {
 class AssignmentNode final : public AstNode {
 public:
     AssignmentNode(std::string register_name, std::shared_ptr<AstNode> expr);
-    void accept() override;
+    void accept(const Visitor* visitor) const override;
     ~AssignmentNode() {
         // TODO: remove
         std::cout << "~AssignmentNode()" << std::endl;

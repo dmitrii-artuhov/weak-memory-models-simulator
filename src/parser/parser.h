@@ -32,6 +32,8 @@ private:
     std::shared_ptr<AstNode> parse_assignment();
     std::shared_ptr<AstNode> parse_binop();
     std::shared_ptr<AstNode> parse_condition();
+    std::shared_ptr<AstNode> parse_goto();
+    std::shared_ptr<AstNode> parse_thread_goto();
     template<class NodeType, Token::Type token_type>
     std::shared_ptr<AstNode> parse_double_argument_call() {
         // function

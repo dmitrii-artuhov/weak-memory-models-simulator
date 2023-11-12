@@ -18,7 +18,7 @@ public:
     };
 
     BinOpNode(std::string left_register, Type operation, std::string right_register);
-    void accept() override;
+    void accept(const Visitor* visitor) const override;
     ~BinOpNode() {
         // TODO: remove
         std::cout << "~BinOpNode()" << std::endl;

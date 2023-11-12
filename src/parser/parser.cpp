@@ -15,6 +15,8 @@
 #include "ast/assignment/assignment.h"
 #include "ast/binop/binop.h"
 #include "ast/condition/condition.h"
+#include "ast/goto/goto.h"
+#include "ast/thread-goto/thread-goto.h"
 #include "ast/load/load.h"
 #include "ast/store/store.h"
 #include "ast/fai/fai.h"
@@ -122,6 +124,18 @@ std::shared_ptr<StatementNode> Parser::parse_statement() {
             // condition
             std::cout << "parse condition" << std::endl;
             statement = parse_condition();
+            break;
+        }
+        case Token::Type::GOTO: {
+            // goto
+            std::cout << "parse goto" << std::endl;
+            statement = parse_goto();
+            break;
+        }
+        case Token::Type::THREAD_GOTO: {
+            // thread creation
+            std::cout << "parse thread_goto" << std::endl;
+            statement = parse_thread_goto();
             break;
         }
         case Token::Type::LOAD: {
@@ -279,6 +293,44 @@ std::shared_ptr<AstNode> Parser::parse_condition() {
 
     return std::shared_ptr<AstNode>(
         new ConditionNode(std::string(register_name), std::string(goto_label))
+    );
+}
+
+std::shared_ptr<AstNode> Parser::parse_goto() {
+    // goto
+    if (!peek().is(Token::Type::GOTO)) {
+        throw exceptions::unexpected_token(peek(), { Token::Type::GOTO });
+    }
+    advance();
+
+    // label name
+    if (!peek().is(Token::Type::IDENTIFIER)) {
+        throw exceptions::unexpected_token(peek(), { Token::Type::IDENTIFIER });
+    }
+    std::string_view goto_label = peek().get_lexeme();
+    advance();
+
+    return std::shared_ptr<AstNode>(
+        new GotoNode(std::string(goto_label))
+    );
+}
+
+std::shared_ptr<AstNode> Parser::parse_thread_goto() {
+    // thread_goto
+    if (!peek().is(Token::Type::THREAD_GOTO)) {
+        throw exceptions::unexpected_token(peek(), { Token::Type::THREAD_GOTO });
+    }
+    advance();
+
+    // label name
+    if (!peek().is(Token::Type::IDENTIFIER)) {
+        throw exceptions::unexpected_token(peek(), { Token::Type::IDENTIFIER });
+    }
+    std::string_view thread_goto_label = peek().get_lexeme();
+    advance();
+
+    return std::shared_ptr<AstNode>(
+        new ThreadGotoNode(std::string(thread_goto_label))
     );
 }
 

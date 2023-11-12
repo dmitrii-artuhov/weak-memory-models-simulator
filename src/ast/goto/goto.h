@@ -7,14 +7,16 @@
 
 namespace wmm_simulator {
 
-class EndNode final : public AstNode {
+class GotoNode final : public AstNode {
 public:
-    EndNode();
+    GotoNode(std::string goto_label);
     void accept(const Visitor* visitor) const override;
-    ~EndNode() {
+    ~GotoNode() {
         // TODO: remove
-        std::cout << "~EndNode()" << std::endl;
+        std::cout << "~GotoNode()" << std::endl;
     }
+private:
+    std::string m_goto_label;
 };
 
 }

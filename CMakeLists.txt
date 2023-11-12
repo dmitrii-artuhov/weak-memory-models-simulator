@@ -12,7 +12,7 @@ set(TESTS_TARGET tests)
 
 #### compile options for all targets
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    add_compile_options(-Wall -Wextra -Werror)
+    add_compile_options(-Wall -Wextra -Werror) # why these cause the build crash -fsanitize=address -fsanitize=leak ?
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W4 /WX)
 endif()
@@ -58,6 +58,12 @@ set(SIMULATOR_SRCS
     src/ast/condition/condition.cpp
     src/ast/condition/condition.h
     
+    src/ast/goto/goto.cpp
+    src/ast/goto/goto.h
+
+    src/ast/thread-goto/thread-goto.cpp
+    src/ast/thread-goto/thread-goto.h
+    
     src/ast/load/load.cpp
     src/ast/load/load.h
     
@@ -75,10 +81,13 @@ set(SIMULATOR_SRCS
     
     src/ast/end/end.cpp
     src/ast/end/end.h
+
+    src/visitor/visitor.h
 )
 
 set(TESTS_SRCS
     tests/test-lexer.cpp
+    tests/test-parser.cpp
     ${SIMULATOR_SRCS}
 )
 

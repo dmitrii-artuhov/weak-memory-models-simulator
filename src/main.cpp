@@ -21,7 +21,7 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // std::cout << "Program text: \n" << program_text << std::endl;
 
         std::string code =
-        "r = 1\n";
+        "L1: r = 1\n";
 
         Lexer lexer(code.c_str());
         std::vector <Token> tokens = lexer.get_tokens();

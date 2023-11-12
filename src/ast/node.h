@@ -4,11 +4,13 @@
 #include <string>
 #include <memory>
 
+#include "visitor/visitor.h"
+
 namespace wmm_simulator {
 
 class AstNode {
 public:
-    virtual void accept() = 0; // TODO: implement visitor pattern here
+    virtual void accept(const Visitor* visitor) const = 0;
     virtual ~AstNode() {}
 };
 
