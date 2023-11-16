@@ -20,13 +20,20 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
     
         // std::string program_path = argv[1];
-        // std::string program_text = fs::FileReader::read_file(program_path);
+        std::string program_path = "../tests/test-data/message-passing.txt";
+        std::string code = fs::FileReader::read_file(program_path);
 
-        // std::cout << "Program text: \n" << program_text << std::endl;
 
-        std::string code =
-        "L1: r = 1\n";
+        // std::string code =
+        // "a = 3\n"
+        // "store SEQ_CST #x a\n"
+        // "a = 5\n"
+        // "c = 7\n"
+        // "b = cas SEQ_CST #x a c\n";
+        // "b = fai SEQ_CST #x a\n";
 
+        std::cout << "Program text: \n" << code << std::endl;
+        
         Lexer lexer(code.c_str());
         std::vector <Token> tokens = lexer.get_tokens();
 
@@ -42,8 +49,18 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
             std::unordered_map<std::string_view, int>
         > parse_result = parser.parse();
 
+        std::cout << "Labels table:" << std::endl;
+        for (auto [ label, instruction_index ] : parse_result.second) {
+            std::cout << label << ": " << instruction_index << std::endl;
+        }
+        std::cout << std::endl;
+
         Interpreter<SCStorageSubsystem> interpreter(parse_result.first, parse_result.second);
         auto storage = interpreter.run();
+
+        for (auto [ loc, val ] : storage) {
+            std::cout << "" << loc << ": " << val << std::endl;
+        }
     }
     catch(const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;

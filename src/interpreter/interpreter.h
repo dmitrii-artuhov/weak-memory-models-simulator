@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <map>
 #include <unordered_map>
 #include <type_traits>
 
@@ -15,20 +16,20 @@
 #include "ast/condition/condition.h"
 #include "ast/load/load.h"
 #include "ast/store/store.h"
+#include "ast/cas/cas.h"
+#include "ast/fai/fai.h"
+#include "ast/fence/fence.h"
 #include "ast/goto/goto.h"
 #include "ast/thread-goto/thread-goto.h"
 #include "ast/end/end.h"
 
 namespace wmm_simulator {
 
-// template<class StorageSubsystemType>
-// using IsBaseOfStorageSubsystemType = std::enable_if_t<std::is_base_of<StorageSubsystem, StorageSubsystemType>::value>;
-
 template<class T>
 class Interpreter : public Visitor {
     static_assert(
         std::is_base_of<StorageSubsystem, T>::value,
-        "T must be classes derived from StorageSubsystem."
+        "T must be a class derived from `StorageSubsystem`."
     );
 
     struct ThreadState;
@@ -38,7 +39,7 @@ public:
         std::shared_ptr<ProgramNode> root,
         std::unordered_map<std::string_view, int> labeled_instructions
     );
-    std::shared_ptr<StorageSubsystem> run();
+    std::unordered_map<std::string, int> run();
     
     void visit(const AstNode* node) override;
     void visit(const StatementNode* node) override;
@@ -50,6 +51,9 @@ public:
     void visit(const ConditionNode* node) override;
     void visit(const LoadNode* node) override;
     void visit(const StoreNode* node) override;
+    void visit(const CasNode* node) override;
+    void visit(const FaiNode* node) override;
+    void visit(const FenceNode* node) override;
     void visit(const EndNode* node) override;
 
 private:
@@ -60,12 +64,14 @@ private:
     
     std::shared_ptr<ProgramNode> m_root;
     std::unordered_map<std::string_view, int> m_labeled_instructions;
-    std::unordered_map <int, ThreadState> m_threads;
+    std::map <int, ThreadState> m_threads;
     std::shared_ptr<StorageSubsystem> m_storage;
     int m_max_thread_index = 0;
     int m_current_thread = 0;
     int m_last_evaluated_value; // for visiting expressions
+    int m_goto_instruction = -1; // for inner nodes to tell StatementNode that goto command was executed
 
+    int pick_random_thread() const;
     bool has_active_threads() const;
 };
 

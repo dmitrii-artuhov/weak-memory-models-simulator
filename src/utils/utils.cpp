@@ -110,9 +110,9 @@ bool is_identifier_char(char c) {
 }
 
 int get_random_in_range(int left, int right) {
-    static const int RANDOM_SEED = 23;
-    static std::mt19937 gen{RANDOM_SEED};
-    static std::uniform_int_distribution<> dist{left, right};
+    static std::random_device rd;
+    static std::mt19937 gen{rd()};
+    std::uniform_int_distribution<> dist{left, right};
     
     return dist(gen);
 }

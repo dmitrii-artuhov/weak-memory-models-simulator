@@ -1,6 +1,7 @@
 #include "interpreter.h"
 
 #include <memory>
+#include <iterator>
 
 #include "utils/utils.h"
 #include "exceptions/exceptions.h"
@@ -8,7 +9,6 @@
 #include "storage-subsystem/storage-subsystem.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "ast/node.h"
-#include "ast/program/program.h"
 
 
 namespace wmm_simulator {
@@ -29,19 +29,31 @@ Interpreter<T>::Interpreter(
 }
 
 template<class T>
-std::shared_ptr<StorageSubsystem> Interpreter<T>::run() {
+std::unordered_map<std::string, int> Interpreter<T>::run() {
     while (has_active_threads()) {
         // pick current thread
-        m_current_thread = utils::get_random_in_range(0, m_threads.size() - 1);
+        m_current_thread = pick_random_thread();
 
-        // eps transitions (for now SC model, no eps)
+        std::cout << "Executing thread: " << m_current_thread << std::endl;
+        
+        // TODO: allow eps transitions (for now SC model, no eps)
 
         // non-eps transitions
         int instruction = m_threads[m_current_thread].instruction_index;
         m_root->get_statements()[instruction]->accept(this);
     }
 
-    return m_storage;
+    return m_storage->get_storage();
+}
+
+template<class T>
+int Interpreter<T>::pick_random_thread() const {
+    int offset = utils::get_random_in_range(0, m_threads.size() - 1);
+    std::cout << "offset: " << offset << std::endl;
+    
+    auto it = m_threads.begin();
+    std::advance(it, offset);
+    return it->first;
 }
 
 template<class T>
@@ -57,7 +69,18 @@ void Interpreter<T>::visit(const AstNode*) {
 template<class T>
 void Interpreter<T>::visit(const StatementNode* node) {
     std::cout << "Interpret StatementNode" << std::endl;
-    node->accept(this); // inner nodes will change instruction index 
+    
+    node->get_statement()->accept(this); // inner nodes will set `m_goto_instruction` instruction index if required
+
+    if (m_threads.count(m_current_thread)) {
+        if (m_goto_instruction == -1) {
+            m_threads[m_current_thread].instruction_index++;
+        }
+        else {
+            m_threads[m_current_thread].instruction_index = m_goto_instruction;
+            m_goto_instruction = -1;
+        }
+    }
 }
 
 template<class T>
@@ -69,7 +92,7 @@ void Interpreter<T>::visit(const GotoNode* node) {
         throw exceptions::unknown_label(std::string(goto_label));
     }
 
-    m_threads[m_current_thread].instruction_index = m_labeled_instructions[goto_label];
+    m_goto_instruction = m_labeled_instructions[goto_label];
 }
 
 template<class T>
@@ -86,8 +109,6 @@ void Interpreter<T>::visit(const ThreadGotoNode* node) {
         m_labeled_instructions[thread_start_label],
         ThreadSubsystem()
     };
-
-    m_threads[m_current_thread].instruction_index++;
 }
 
 template<class T>
@@ -98,8 +119,6 @@ void Interpreter<T>::visit(const AssignmentNode* node) {
         node->get_register_name(),
         m_last_evaluated_value
     );
-
-    m_threads[m_current_thread].instruction_index++;
 }
 
 template<class T>
@@ -147,19 +166,16 @@ void Interpreter<T>::visit(const ConditionNode* node) {
         if (!m_labeled_instructions.count(goto_label)) {
             throw exceptions::unknown_label(std::string(goto_label));
         }
-        m_threads[m_current_thread].instruction_index = m_labeled_instructions[goto_label];
-    }
-    else {
-        m_threads[m_current_thread].instruction_index++;
+        m_goto_instruction = m_labeled_instructions[goto_label];
     }
 }
-
 
 template<class T>
 void Interpreter<T>::visit(const LoadNode* node) {
     std::cout << "Interpret LoadNode" << std::endl;
 
     int value = m_storage->read(
+        m_current_thread,
         node->get_location_name(),
         node->get_memory_order()
     );
@@ -167,22 +183,100 @@ void Interpreter<T>::visit(const LoadNode* node) {
         node->get_register_name(),
         value
     );
-
-    m_threads[m_current_thread].instruction_index++;
 }
 
 template<class T>
-void Interpreter<T>::visit(const StoreNode*) {
+void Interpreter<T>::visit(const StoreNode* node) {
     std::cout << "Interpret StoreNode" << std::endl;
+    int value = m_threads[m_current_thread].thread_subsystem.get(
+        node->get_register_name()
+    );
+    m_storage->write(
+        m_current_thread,
+        node->get_location_name(),
+        value,
+        node->get_memory_order()
+    );
+}
+
+template<class T>
+void Interpreter<T>::visit(const FenceNode* node) {
+    std::cout << "Interpret FenceNode" << std::endl;
+
+    m_storage->fence(
+        m_current_thread,
+        node->get_memory_order()
+    );
+}
+
+template<class T>
+void Interpreter<T>::visit(const CasNode* node) {
+    std::cout << "Interpret CasNode" << std::endl;
+
+    auto location_name = node->get_location_name();
+    auto memory_order = node->get_memory_order();
+    auto& thread_subsystem = m_threads[m_current_thread].thread_subsystem;
+
+    int expected = thread_subsystem.get(node->get_expected_register());
+    int desired = thread_subsystem.get(node->get_desired_register());
+
+    int actual = m_storage->read(
+        m_current_thread,
+        location_name,
+        memory_order
+    );
+
+    if (actual == expected) {
+        m_storage->write(
+            m_current_thread,
+            location_name,
+            desired,
+            memory_order
+        );
+    }
+
+    m_last_evaluated_value = actual;
+}
+
+template<class T>
+void Interpreter<T>::visit(const FaiNode* node) {
+    std::cout << "Interpret FaiNode" << std::endl;
     
+    auto register_name = node->get_register_name();
+    auto location_name = node->get_location_name();
+    auto memory_order = node->get_memory_order();
+
+    int increment = m_threads[m_current_thread].thread_subsystem.get(register_name);
+    
+    int previous_value = m_storage->read(
+        m_current_thread,
+        location_name,
+        memory_order
+    );
+
+    m_storage->write(
+        m_current_thread,
+        location_name,
+        previous_value + increment,
+        node->get_memory_order()
+    );
+
+    m_last_evaluated_value = previous_value;
 }
 
 template<class T>
 void Interpreter<T>::visit(const EndNode*) {
     std::cout << "Interpret EndNode" << std::endl;
+    
+    auto registers = m_threads[m_current_thread].thread_subsystem.get_registers();
+    std::cout << "Thread ID: " << m_current_thread << std::endl;
+    for (auto& [ register_name, val ] : registers) {
+        std::cout << register_name << ": " << val << std::endl;
+    }
+    std::cout << std::endl;
+    
     m_threads.erase(m_current_thread);
 }
-
 
 // Explicit template instantiation
 template class Interpreter<SCStorageSubsystem>;

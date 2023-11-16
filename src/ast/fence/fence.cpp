@@ -13,4 +13,8 @@ void FenceNode::accept(Visitor* visitor) const {
     visitor->visit(this);
 }
 
+MemoryOrder FenceNode::get_memory_order() const {
+    return m_memory_order;
+}
+
 }

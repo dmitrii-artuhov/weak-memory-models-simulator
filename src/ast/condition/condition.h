@@ -11,10 +11,6 @@ class ConditionNode final : public AstNode {
 public:
     ConditionNode(std::string register_name, std::string goto_label);
     void accept(Visitor* visitor) const override;
-    ~ConditionNode() {
-        // TODO: remove
-        std::cout << "~ConditionNode()" << std::endl;
-    }
 
     const std::string_view get_register_name() const;
     const std::string_view get_goto_label() const;

@@ -12,6 +12,7 @@ private:
 public:
     void set(std::string_view register_name, int value);
     int get(std::string_view register_name);
+    std::unordered_map<std::string, int> get_registers() const;
 };
 
 }

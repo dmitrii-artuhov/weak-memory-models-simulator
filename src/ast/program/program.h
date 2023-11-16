@@ -14,10 +14,6 @@ class ProgramNode final : public AstNode {
 public:
     ProgramNode(std::vector<std::shared_ptr<StatementNode>> statements);
     void accept(Visitor* visitor) const override;
-    ~ProgramNode() {
-        // TODO: remove
-        std::cout << "~ProgramNode()" << std::endl;
-    }
 
     const std::vector<std::shared_ptr<StatementNode>>& get_statements() const;
 

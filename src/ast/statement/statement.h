@@ -12,12 +12,9 @@ class StatementNode : public AstNode {
 public:
     StatementNode(std::shared_ptr<AstNode> statement, std::string label = "");
     void accept(Visitor* visitor) const override;
-    ~StatementNode() {
-        // TODO: remove
-        std::cout << "~StatementNode()" << std::endl;
-    }
 
     const std::string_view get_label() const;
+    const std::shared_ptr<AstNode> get_statement() const;
 
 private:
     std::shared_ptr<AstNode> m_statement;

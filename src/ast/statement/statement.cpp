@@ -15,4 +15,8 @@ const std::string_view StatementNode::get_label() const {
     return m_label;
 }
 
+const std::shared_ptr<AstNode> StatementNode::get_statement() const {
+    return m_statement;
+}
+
 }

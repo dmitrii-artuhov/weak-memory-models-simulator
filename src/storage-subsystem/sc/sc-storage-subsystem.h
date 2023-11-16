@@ -1,7 +1,7 @@
 #pragma once
 
-#include <unordered_map>
 #include <iostream>
+#include <unordered_map>
 
 #include "storage-subsystem/storage-subsystem.h"
 
@@ -14,10 +14,23 @@ public:
         std::cout << "~SCStorageSubsystem" << std::endl;
     }
 
-    int read(std::string_view location_name, MemoryOrder memory_order) override;
-    void write(std::string_view location_name, int value, MemoryOrder memory_order) override;
-    int read_modify_write(std::string_view location_name, int new_value, MemoryOrder memory_order) override;
-    void fence(MemoryOrder memory_order) override;
+    int read(
+        int thread_id,
+        std::string_view location_name,
+        MemoryOrder memory_order
+    ) override;
+    void write(
+        int thread_id,
+        std::string_view location_name,
+        int value,
+        MemoryOrder memory_order
+    ) override;
+    void fence(
+        int thread_id,
+        MemoryOrder memory_order
+    ) override;
+    
+    std::unordered_map<std::string, int> get_storage() override;
 
 private:
     std::unordered_map<std::string_view, int> m_memory; // { location name, value }

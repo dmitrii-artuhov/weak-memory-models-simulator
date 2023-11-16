@@ -1,0 +1,14 @@
+thread_goto T1
+thread_goto T2
+goto END
+
+T1: r = 1
+store SEQ_CST #x r
+store SEQ_CST #y r
+goto END
+
+T2: load SEQ_CST #y a
+load SEQ_CST #x b
+goto END
+
+END:

@@ -15,4 +15,16 @@ void StoreNode::accept(Visitor* visitor) const {
     visitor->visit(this);
 }
 
+MemoryOrder StoreNode::get_memory_order() const {
+    return m_memory_order;
+}
+
+const std::string_view StoreNode::get_location_name() const {
+    return std::string_view(m_location_name);
+}
+
+const std::string_view StoreNode::get_register_name() const {
+    return std::string_view(m_register_name);
+}
+
 }

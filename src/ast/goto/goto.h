@@ -11,10 +11,6 @@ class GotoNode final : public AstNode {
 public:
     GotoNode(std::string goto_label);
     void accept(Visitor* visitor) const override;
-    ~GotoNode() {
-        // TODO: remove
-        std::cout << "~GotoNode()" << std::endl;
-    }
     
     const std::string_view get_goto_label() const;
 private:

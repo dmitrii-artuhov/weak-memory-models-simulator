@@ -14,10 +14,8 @@ class FenceNode final : public AstNode {
 public:
     FenceNode(MemoryOrder memory_order);
     void accept(Visitor* visitor) const override;
-    ~FenceNode() {
-        // TODO: remove
-        std::cout << "~FenceNode()" << std::endl;
-    }
+
+    MemoryOrder get_memory_order() const;
 
 private:
     MemoryOrder m_memory_order;

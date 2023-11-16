@@ -11,10 +11,6 @@ class EndNode final : public AstNode {
 public:
     EndNode();
     void accept(Visitor* visitor) const override;
-    ~EndNode() {
-        // TODO: remove
-        std::cout << "~EndNode()" << std::endl;
-    }
 };
 
 }

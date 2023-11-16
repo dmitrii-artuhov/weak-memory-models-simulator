@@ -19,10 +19,11 @@ public:
         std::string register_desired
     );
     void accept(Visitor* visitor) const override;
-    ~CasNode() {
-        // TODO: remove
-        std::cout << "~CasNode()" << std::endl;
-    }
+
+    MemoryOrder get_memory_order() const;
+    const std::string_view get_location_name() const;
+    const std::string_view get_expected_register() const;
+    const std::string_view get_desired_register() const;
 
 private:
     MemoryOrder m_memory_order;

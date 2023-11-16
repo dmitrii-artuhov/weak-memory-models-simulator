@@ -10,4 +10,14 @@ int ThreadSubsystem::get(std::string_view register_name) {
     return m_store[register_name];    
 }
 
+std::unordered_map<std::string, int> ThreadSubsystem::get_registers() const {
+    std::unordered_map<std::string, int> result;
+
+    for (auto [ register_name, value ] : m_store) {
+        result.insert({ std::string(register_name), value });
+    }
+
+    return result;
+}
+
 }

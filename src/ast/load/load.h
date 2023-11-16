@@ -14,10 +14,6 @@ class LoadNode final : public AstNode {
 public:
     LoadNode(MemoryOrder memory_order, std::string location_name, std::string register_name);
     void accept(Visitor* visitor) const override;
-    ~LoadNode() {
-        // TODO: remove
-        std::cout << "~LoadNode()" << std::endl;
-    }
 
     MemoryOrder get_memory_order() const;
     const std::string_view get_location_name() const;

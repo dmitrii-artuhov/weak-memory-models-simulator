@@ -16,4 +16,20 @@ void CasNode::accept(Visitor* visitor) const {
     visitor->visit(this);
 }
 
+MemoryOrder CasNode::get_memory_order() const {
+    return m_memory_order;
+}
+
+const std::string_view CasNode::get_location_name() const {
+    return std::string_view(m_location_name);
+}
+
+const std::string_view CasNode::get_expected_register() const {
+    return std::string_view(m_register_expected);
+}
+
+const std::string_view CasNode::get_desired_register() const {
+    return std::string_view(m_register_desired);
+}
+
 }

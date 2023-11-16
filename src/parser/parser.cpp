@@ -210,10 +210,16 @@ std::shared_ptr<AstNode> Parser::parse_assignment() {
     advance();
 
 
-    // binop | number
+    // binop | number | (cas, fai)
     const Token& t = peek();
     
-    if (t.is(Token::Type::IDENTIFIER)) {
+    if (t.is(Token::Type::CAS)) {
+        expr = parse_cas_call();
+    }
+    else if (t.is(Token::Type::FAI)) {
+        expr = parse_double_argument_call<FaiNode, Token::Type::FAI>();
+    }
+    else if (t.is(Token::Type::IDENTIFIER)) {
         // binop
         expr = parse_binop();
     }
@@ -226,7 +232,7 @@ std::shared_ptr<AstNode> Parser::parse_assignment() {
         advance();
     }
     else {
-        throw exceptions::unexpected_token(t, { Token::Type::IDENTIFIER, Token::Type::NUMBER });
+        throw exceptions::unexpected_token(t, { Token::Type::IDENTIFIER, Token::Type::NUMBER, Token::Type::CAS, Token::Type::FAI });
     }
 
     return std::shared_ptr<AstNode>(new AssignmentNode(

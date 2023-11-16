@@ -15,4 +15,16 @@ void FaiNode::accept(Visitor* visitor) const {
     visitor->visit(this);
 }
 
+MemoryOrder FaiNode::get_memory_order() const {
+    return m_memory_order;
+}
+
+const std::string_view FaiNode::get_location_name() const {
+    return std::string_view(m_location_name);
+}
+
+const std::string_view FaiNode::get_register_name() const {
+    return std::string_view(m_register_name);
+}
+
 }
