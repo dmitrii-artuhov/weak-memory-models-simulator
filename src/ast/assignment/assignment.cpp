@@ -15,9 +15,16 @@ AssignmentNode::AssignmentNode(
     std::shared_ptr<AstNode> expr
 ): m_register_name(std::move(register_name)), m_expr(expr) {}
 
-void AssignmentNode::accept(const Visitor* visitor) const {
+void AssignmentNode::accept(Visitor* visitor) const {
     visitor->visit(this);
-    std::cout << "AssignmentNode visit" << std::endl;
+}
+
+const std::string_view AssignmentNode::get_register_name() const {
+    return std::string_view(m_register_name);
+}
+
+const std::shared_ptr<AstNode> AssignmentNode::get_expression() const {
+    return m_expr;
 }
 
 }

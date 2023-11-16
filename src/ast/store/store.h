@@ -13,7 +13,7 @@ namespace wmm_simulator {
 class StoreNode final : public AstNode {
 public:
     StoreNode(MemoryOrder memory_order, std::string location_name, std::string register_name);
-    void accept(const Visitor* visitor) const override;
+    void accept(Visitor* visitor) const override;
     ~StoreNode() {
         // TODO: remove
         std::cout << "~StoreNode()" << std::endl;

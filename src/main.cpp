@@ -1,11 +1,15 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <unordered_map>
 
 #include "exceptions/exceptions.h"
 #include "file-reader/file-reader.h"
 #include "lexer/token.h"
 #include "lexer/lexer.h"
 #include "parser/parser.h"
+#include "interpreter/interpreter.h"
+#include "storage-subsystem/sc/sc-storage-subsystem.h"
 
 int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
     using namespace wmm_simulator;
@@ -33,7 +37,13 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         std::cout << std::endl << "Parsing:" << std::endl;
 
         Parser parser(tokens);
-        std::shared_ptr<AstNode> ast = parser.parse();
+        std::pair<
+            std::shared_ptr<ProgramNode>,
+            std::unordered_map<std::string_view, int>
+        > parse_result = parser.parse();
+
+        Interpreter<SCStorageSubsystem> interpreter(parse_result.first, parse_result.second);
+        auto storage = interpreter.run();
     }
     catch(const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;

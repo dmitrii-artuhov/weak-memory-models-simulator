@@ -2,21 +2,28 @@
 
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 #include "lexer/token.h"
 #include "exceptions/exceptions.h"
 #include "lang/memory-order.h"
+#include "visitor/visitor.h"
 
 #include "ast/node.h"
 #include "ast/program/program.h"
 #include "ast/binop/binop.h"
+
+
 
 namespace wmm_simulator {
 
 class Parser {
 public:
     Parser(std::vector<Token> tokens);
-    std::shared_ptr<AstNode> parse();
+    std::pair<
+        std::shared_ptr<ProgramNode>,
+        std::unordered_map<std::string_view, int>
+    > parse();
 
 private:
     std::vector <Token> m_tokens;
@@ -73,6 +80,17 @@ private:
     }
     std::shared_ptr<AstNode> parse_cas_call();
     std::shared_ptr<AstNode> parse_fence_call();
+
+    class LabeledInstructionsRetriever : Visitor {
+    public:
+        LabeledInstructionsRetriever(AstNode* node);
+        std::unordered_map<std::string_view, int> get_labeled_instructions();
+        void visit(const ProgramNode* node) override;
+
+    private:
+        AstNode* m_node;
+        std::unordered_map<std::string_view, int> m_instructions;
+    };
 };
 
 }

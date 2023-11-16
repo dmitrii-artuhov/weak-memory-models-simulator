@@ -5,9 +5,8 @@ namespace wmm_simulator {
 
 EndNode::EndNode() {}
 
-void EndNode::accept(const Visitor* visitor) const {
+void EndNode::accept(Visitor* visitor) const {
     visitor->visit(this);
-    std::cout << "EndNode visist" << std::endl;
 }
 
 }

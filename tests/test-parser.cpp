@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <algorithm>
+#include <unordered_map>
 
 #include "lexer/lexer.h"
 #include "parser/parser.h"
@@ -46,7 +48,10 @@ TEST_CASE("Parser: assignment") {
     Lexer lexer(code.c_str());
     Parser parser(lexer.get_tokens());
 
-    std::shared_ptr<AstNode> ast = parser.parse();
+    std::pair<
+        std::shared_ptr<ProgramNode>,
+        std::unordered_map<std::string_view, int>
+    > ast = parser.parse();
     // TestVisitor visitor;
     // ast->accept(&visitor);
     // TODO: write tests

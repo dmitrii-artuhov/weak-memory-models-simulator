@@ -11,9 +11,8 @@ StoreNode::StoreNode(
     std::string register_name
 ): m_memory_order(memory_order), m_location_name(location_name), m_register_name(register_name) {}
 
-void StoreNode::accept(const Visitor* visitor) const {
+void StoreNode::accept(Visitor* visitor) const {
     visitor->visit(this);
-    std::cout << "StoreNode visit" << std::endl;
 }
 
 }

@@ -11,7 +11,7 @@ namespace wmm_simulator {
 class StatementNode : public AstNode {
 public:
     StatementNode(std::shared_ptr<AstNode> statement, std::string label = "");
-    void accept(const Visitor* visitor) const override;
+    void accept(Visitor* visitor) const override;
     ~StatementNode() {
         // TODO: remove
         std::cout << "~StatementNode()" << std::endl;

@@ -23,6 +23,7 @@ set(SIMULATOR_SRCS
 
     src/exceptions/exceptions.h
     
+    src/utils/utils.cpp
     src/utils/utils.h
 
     src/parser/parser.cpp
@@ -36,6 +37,20 @@ set(SIMULATOR_SRCS
 
     src/lang/keywords.h
     src/lang/memory-order.h
+    
+    src/visitor/visitor.h
+
+    src/interpreter/interpreter.cpp
+    src/interpreter/interpreter.h
+
+    src/thread-subsystem/thread-subsystem.cpp
+    src/thread-subsystem/thread-subsystem.h
+    
+    # storage subsystems
+    src/storage-subsystem/storage-subsystem.h
+
+    src/storage-subsystem/sc/sc-storage-subsystem.cpp
+    src/storage-subsystem/sc/sc-storage-subsystem.h
 
     # ast nodes
     src/ast/node.h
@@ -81,8 +96,6 @@ set(SIMULATOR_SRCS
     
     src/ast/end/end.cpp
     src/ast/end/end.h
-
-    src/visitor/visitor.h
 )
 
 set(TESTS_SRCS

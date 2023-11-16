@@ -5,9 +5,13 @@ namespace wmm_simulator {
 
 ThreadGotoNode::ThreadGotoNode(std::string thread_goto_label): m_thread_goto_label(std::move(thread_goto_label)) {}
 
-void ThreadGotoNode::accept(const Visitor* visitor) const {
+void ThreadGotoNode::accept(Visitor* visitor) const {
     visitor->visit(this);
-    std::cout << "ThreadGotoNode visist" << std::endl;
+}
+
+
+const std::string_view ThreadGotoNode::get_thread_start_label() const {
+    return std::string_view(m_thread_goto_label);
 }
 
 }

@@ -27,7 +27,10 @@ namespace wmm_simulator {
 
 Parser::Parser(std::vector <Token> tokens): m_tokens(std::move(tokens)) {}
 
-std::shared_ptr<AstNode> Parser::parse() {
+std::pair<
+    std::shared_ptr<ProgramNode>,
+    std::unordered_map<std::string_view, int>
+> Parser::parse() {
     m_current_token = 0;
 
     auto it = std::find_if(m_tokens.begin(), m_tokens.end(), [] (const Token& token) {
@@ -44,7 +47,10 @@ std::shared_ptr<AstNode> Parser::parse() {
         statements.push_back(statement);
     }
 
-    return std::shared_ptr<AstNode> (new ProgramNode(statements));
+    auto root = std::shared_ptr<ProgramNode> (new ProgramNode(statements));
+    auto labeled_statements = LabeledInstructionsRetriever(root.get()).get_labeled_instructions();
+
+    return { root, labeled_statements };
 }
 
 const Token& Parser::peek() const {
@@ -399,4 +405,31 @@ std::shared_ptr<AstNode> Parser::parse_fence_call() {
         )
     );
 }
+
+
+// LabeledInstructionsRetriever
+Parser::LabeledInstructionsRetriever::LabeledInstructionsRetriever(AstNode* node): m_node(node) {}
+
+std::unordered_map<std::string_view, int> Parser::LabeledInstructionsRetriever::get_labeled_instructions() {
+    m_node->accept(this);
+    return m_instructions;
+}
+
+void Parser::LabeledInstructionsRetriever::visit(const ProgramNode* node) {
+    const auto& statements = node->get_statements();
+
+    for (size_t index = 0; index < statements.size(); ++index) {
+        const auto& statement = statements[index];
+        std::string_view label = statement->get_label();
+        if (label.empty()) continue;
+        // 2 instructions with the same labels
+        if (m_instructions.count(label)) {
+            throw exceptions::multiple_statements_with_same_label(std::string(label));
+        }
+        
+        m_instructions[label] = index;
+    }
+}
+
+
 }

@@ -37,4 +37,13 @@ namespace wmm_simulator::exceptions {
             return expected_types_msg;
         }
     };
+
+    struct multiple_statements_with_same_label : std::runtime_error {
+        explicit multiple_statements_with_same_label(const std::string& label_name) : std::runtime_error("Multiple statements have the same label: '" + label_name + "'") {}
+    };
+
+    struct unknown_label : std::runtime_error {
+        explicit unknown_label(const std::string& label_name) : std::runtime_error("Unknown label: '" + label_name + "'") {}
+    };
+    
 }

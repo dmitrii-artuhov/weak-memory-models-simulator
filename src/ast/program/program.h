@@ -13,7 +13,7 @@ namespace wmm_simulator {
 class ProgramNode final : public AstNode {
 public:
     ProgramNode(std::vector<std::shared_ptr<StatementNode>> statements);
-    void accept(const Visitor* visitor) const override;
+    void accept(Visitor* visitor) const override;
     ~ProgramNode() {
         // TODO: remove
         std::cout << "~ProgramNode()" << std::endl;

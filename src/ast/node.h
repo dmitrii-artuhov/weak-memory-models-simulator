@@ -10,7 +10,7 @@ namespace wmm_simulator {
 
 class AstNode {
 public:
-    virtual void accept(const Visitor* visitor) const = 0;
+    virtual void accept(Visitor* visitor) const = 0;
     virtual ~AstNode() {}
 };
 
