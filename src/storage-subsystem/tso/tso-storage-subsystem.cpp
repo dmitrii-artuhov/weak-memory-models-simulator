@@ -43,6 +43,17 @@ void TSOStorageSubsystem::fence(
     }
 }
 
+std::map<std::string, int> TSOStorageSubsystem::get_storage() {
+    std::map<std::string, int> result;
+    
+    for (auto& [ location_name, value ] : m_memory) {
+        result.insert({ std::string(location_name), value });
+    }
+
+    return result;
+}
+
+
 bool TSOStorageSubsystem::has_eps_transitions(int thread_id) const {
     return m_store_buffers.count(thread_id);
 }
@@ -53,15 +64,15 @@ void TSOStorageSubsystem::propagate(int thread_id) {
     }
 
     auto& q = m_store_buffers[thread_id];
-    assert(("Queue is empty when performing propagate on thread: " + std::to_string(thread_id), !q.empty()));
+    assert(("Queue must not be empty when performing propagate on thread in TSO: " + std::to_string(thread_id), !q.empty()));
     
     auto [ location_name, value ] = q.front();
-    m_memory[location_name] = value;
-    
     q.pop();
     if (q.empty()) {
         m_store_buffers.erase(thread_id);
     }
+
+    m_memory[location_name] = value;
 }
 
 void TSOStorageSubsystem::flush_all_buffers() {
@@ -76,16 +87,6 @@ void TSOStorageSubsystem::flush_all_buffers() {
     }
 }
 
-std::map<std::string, int> TSOStorageSubsystem::get_storage() {
-    std::map<std::string, int> result;
-    
-    for (auto& [ location_name, value ] : m_memory) {
-        result.insert({ std::string(location_name), value });
-    }
-
-    return result;
-}
-
 void TSOStorageSubsystem::flush(int thread_id) {
     if (!m_store_buffers.count(thread_id)) {
         return;
@@ -94,10 +95,8 @@ void TSOStorageSubsystem::flush(int thread_id) {
     auto& q = m_store_buffers[thread_id];
     while (!q.empty()) {
         auto [ location_name, value ] = q.front();
-        
-        m_memory[location_name] = value;
-        
         q.pop();
+        m_memory[location_name] = value;
     }
 
     m_store_buffers.erase(thread_id);

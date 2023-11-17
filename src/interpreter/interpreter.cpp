@@ -9,6 +9,7 @@
 #include "storage-subsystem/storage-subsystem.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
+#include "storage-subsystem/pso/pso-storage-subsystem.h"
 #include "ast/node.h"
 
 
@@ -110,6 +111,63 @@ std::pair<
 
     return get_state();
 }
+
+
+/*  Specialization for a PSO storage subsystem */
+template<>
+std::pair<
+    std::map<std::string, int>,
+    std::map<int, std::map<std::string, int>>
+> Interpreter<PSOStorageSubsystem>::run() {
+    std::shared_ptr<PSOStorageSubsystem> pso_storage = std::static_pointer_cast<PSOStorageSubsystem> (m_storage);
+    
+    while (has_active_threads()) {
+        // TODO: implement skipping of unrelated to storage subsystem operations 
+
+        // pick current thread
+        m_current_thread = pick_random_thread();
+
+        std::cout << "Executing thread: " << m_current_thread << std::endl;
+        
+        if (
+            pso_storage->has_eps_transitions(m_current_thread) &&
+            utils::get_random_in_range(0, 1) == 0
+        ) {
+            // eps transitions
+            std::cout << "Perform propagate" << std::endl;
+            auto location_names = pso_storage->get_propagate_locations(m_current_thread);
+
+            if (!location_names.empty()) {
+                std::cout << "Locations: ["; 
+                for (size_t i = 0; i < location_names.size(); ++i) {
+                    std::cout << "'" << location_names[i] << "'";
+                    if (i != location_names.size() - 1) std::cout << ", ";
+                }
+                std::cout << "]" << std::endl;
+
+                size_t index = utils::get_random_in_range(0, location_names.size() - 1);
+
+                std::cout << "Perform propagate on location '" << location_names[index] << "'" << std::endl;
+                
+                pso_storage->propagate(
+                    m_current_thread,
+                    location_names[index]
+                );
+            }
+        }
+        else {
+            // non-eps transitions
+            std::cout << "Perform step" << std::endl;
+            int instruction = m_threads[m_current_thread].instruction_index;
+            m_root->get_statements()[instruction]->accept(this);
+        }
+    }
+
+    pso_storage->flush_all_buffers();
+
+    return get_state();
+}
+
 
 template<class T>
 int Interpreter<T>::pick_random_thread() const {
@@ -360,5 +418,6 @@ void Interpreter<T>::visit(const EndNode*) {
 // Explicit template instantiation
 template class Interpreter<SCStorageSubsystem>;
 template class Interpreter<TSOStorageSubsystem>;
+template class Interpreter<PSOStorageSubsystem>;
 
 }

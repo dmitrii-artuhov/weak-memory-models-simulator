@@ -11,6 +11,7 @@
 #include "interpreter/interpreter.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
+#include "storage-subsystem/pso/pso-storage-subsystem.h"
 
 int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
     using namespace wmm_simulator;
@@ -21,8 +22,8 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
     
         // std::string program_path = argv[1];
-        // std::string program_path = "../tests/test-data/message-passing.txt";
-        std::string program_path = "../tests/test-data/store-buffering.txt";
+        std::string program_path = "../tests/test-data/message-passing.txt";
+        // std::string program_path = "../tests/test-data/store-buffering.txt";
         std::string code = fs::FileReader::read_file(program_path);
 
 
@@ -57,7 +58,7 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         }
         std::cout << std::endl;
 
-        Interpreter<TSOStorageSubsystem> interpreter(parse_result.first, parse_result.second);
+        Interpreter<SCStorageSubsystem> interpreter(parse_result.first, parse_result.second);
         auto state = interpreter.run();
 
         std::cout << std::endl << "=========== Memory state ===========" << std::endl;

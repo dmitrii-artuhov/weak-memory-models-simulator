@@ -54,6 +54,9 @@ set(SIMULATOR_SRCS
     
     src/storage-subsystem/tso/tso-storage-subsystem.cpp
     src/storage-subsystem/tso/tso-storage-subsystem.h
+    
+    src/storage-subsystem/pso/pso-storage-subsystem.cpp
+    src/storage-subsystem/pso/pso-storage-subsystem.h
 
     # ast nodes
     src/ast/node.h
