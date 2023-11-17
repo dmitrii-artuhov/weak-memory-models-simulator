@@ -1,0 +1,15 @@
+thread_goto T1
+thread_goto T2
+goto END
+
+T1: r = 1
+store RLX #x r
+load RLX #y a
+goto END
+
+T2: r = 1
+store RLX #y r
+load RLX #x b
+goto END
+
+END:

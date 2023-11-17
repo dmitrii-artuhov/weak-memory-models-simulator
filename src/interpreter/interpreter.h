@@ -39,7 +39,10 @@ public:
         std::shared_ptr<ProgramNode> root,
         std::unordered_map<std::string_view, int> labeled_instructions
     );
-    std::unordered_map<std::string, int> run();
+    std::pair<
+        std::map<std::string, int>,
+        std::map<int, std::map<std::string, int>>
+    > run();
     
     void visit(const AstNode* node) override;
     void visit(const StatementNode* node) override;
@@ -64,7 +67,8 @@ private:
     
     std::shared_ptr<ProgramNode> m_root;
     std::unordered_map<std::string_view, int> m_labeled_instructions;
-    std::map <int, ThreadState> m_threads;
+    std::map<int, ThreadState> m_threads;
+    std::map<int, std::map<std::string, int>> m_finished_thread_states;
     std::shared_ptr<StorageSubsystem> m_storage;
     int m_max_thread_index = 0;
     int m_current_thread = 0;
@@ -73,6 +77,10 @@ private:
 
     int pick_random_thread() const;
     bool has_active_threads() const;
+    std::pair<
+        std::map<std::string, int>,
+        std::map<int, std::map<std::string, int>>
+    > get_state();
 };
 
 }

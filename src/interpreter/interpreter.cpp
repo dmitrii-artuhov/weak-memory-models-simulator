@@ -8,6 +8,7 @@
 #include "thread-subsystem/thread-subsystem.h"
 #include "storage-subsystem/storage-subsystem.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
+#include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "ast/node.h"
 
 
@@ -28,28 +29,92 @@ Interpreter<T>::Interpreter(
     };
 }
 
-template<class T>
-std::unordered_map<std::string, int> Interpreter<T>::run() {
+// template<class T>
+// std::unordered_map<std::string, int> Interpreter<T>::run() {
+//     while (has_active_threads() || m_storage->has_eps_transitions()) {
+//         // pick current thread
+//         m_current_thread = pick_random_thread();
+
+//         std::cout << "Executing thread: " << m_current_thread << std::endl;
+        
+//         // eps transitions
+//         if (m_storage->has_eps_transitions() && utils::get_random_in_range(0, 1) == 0) {
+//             m_storage->perform_eps_transition();
+//         }
+//         else {
+//             // non-eps transitions
+//             int instruction = m_threads[m_current_thread].instruction_index;
+//             m_root->get_statements()[instruction]->accept(this);
+//         }
+//     }
+
+//     return m_storage->get_storage();
+// }
+
+/*  Specialization for a SC storage subsystem */
+template<>
+std::pair<
+    std::map<std::string, int>,
+    std::map<int, std::map<std::string, int>>
+> Interpreter<SCStorageSubsystem>::run() {
     while (has_active_threads()) {
+        // TODO: implement skipping of unrelated to storage subsystem operations 
+
         // pick current thread
         m_current_thread = pick_random_thread();
 
         std::cout << "Executing thread: " << m_current_thread << std::endl;
         
-        // TODO: allow eps transitions (for now SC model, no eps)
-
         // non-eps transitions
         int instruction = m_threads[m_current_thread].instruction_index;
         m_root->get_statements()[instruction]->accept(this);
     }
 
-    return m_storage->get_storage();
+    return get_state();
+}
+
+
+/*  Specialization for a TSO storage subsystem */
+template<>
+std::pair<
+    std::map<std::string, int>,
+    std::map<int, std::map<std::string, int>>
+> Interpreter<TSOStorageSubsystem>::run() {
+    std::shared_ptr<TSOStorageSubsystem> tso_storage = std::static_pointer_cast<TSOStorageSubsystem> (m_storage);
+    
+    while (has_active_threads()) {
+        // TODO: implement skipping of unrelated to storage subsystem operations 
+
+        // pick current thread
+        m_current_thread = pick_random_thread();
+
+        std::cout << "Executing thread: " << m_current_thread << std::endl;
+        
+        if (
+            tso_storage->has_eps_transitions(m_current_thread) &&
+            utils::get_random_in_range(0, 1) == 0
+        ) {
+            // eps transitions
+            std::cout << "Perform propagate" << std::endl;
+            tso_storage->propagate(m_current_thread);
+        }
+        else {
+            // non-eps transitions
+            std::cout << "Perform step" << std::endl;
+            int instruction = m_threads[m_current_thread].instruction_index;
+            m_root->get_statements()[instruction]->accept(this);
+        }
+    }
+
+    tso_storage->flush_all_buffers();
+
+    return get_state();
 }
 
 template<class T>
 int Interpreter<T>::pick_random_thread() const {
     int offset = utils::get_random_in_range(0, m_threads.size() - 1);
-    std::cout << "offset: " << offset << std::endl;
+    // std::cout << "offset: " << offset << std::endl;
     
     auto it = m_threads.begin();
     std::advance(it, offset);
@@ -59,6 +124,18 @@ int Interpreter<T>::pick_random_thread() const {
 template<class T>
 bool Interpreter<T>::has_active_threads() const {
     return !m_threads.empty();
+}
+
+
+template<class T>
+std::pair<
+    std::map<std::string, int>,
+    std::map<int, std::map<std::string, int>>
+> Interpreter<T>::get_state() {
+    return {
+        m_storage->get_storage(),
+        m_finished_thread_states
+    };
 }
 
 template<class T>
@@ -268,17 +345,20 @@ template<class T>
 void Interpreter<T>::visit(const EndNode*) {
     std::cout << "Interpret EndNode" << std::endl;
     
-    auto registers = m_threads[m_current_thread].thread_subsystem.get_registers();
-    std::cout << "Thread ID: " << m_current_thread << std::endl;
-    for (auto& [ register_name, val ] : registers) {
-        std::cout << register_name << ": " << val << std::endl;
-    }
-    std::cout << std::endl;
+    // auto registers = m_threads[m_current_thread].thread_subsystem.get_registers();
+    // std::cout << "Thread ID: " << m_current_thread << std::endl;
+    // for (auto& [ register_name, val ] : registers) {
+    //     std::cout << register_name << ": " << val << std::endl;
+    // }
+    // std::cout << std::endl;
     
+    m_finished_thread_states[m_current_thread] = m_threads[m_current_thread].thread_subsystem.get_registers();
+
     m_threads.erase(m_current_thread);
 }
 
 // Explicit template instantiation
 template class Interpreter<SCStorageSubsystem>;
+template class Interpreter<TSOStorageSubsystem>;
 
 }

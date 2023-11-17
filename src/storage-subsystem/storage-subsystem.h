@@ -1,10 +1,9 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <map>
 
 #include "lang/memory-order.h"
-
 
 namespace wmm_simulator {
 
@@ -26,7 +25,7 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) = 0;
-    virtual std::unordered_map<std::string, int> get_storage() = 0;
+    virtual std::map<std::string, int> get_storage() = 0;
 };
 
 }

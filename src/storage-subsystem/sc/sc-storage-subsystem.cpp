@@ -1,6 +1,7 @@
 #include "sc-storage-subsystem.h"
 
 #include <string>
+#include <map>
 
 namespace wmm_simulator {
 
@@ -35,8 +36,8 @@ void SCStorageSubsystem::fence(
     // no-op for fence
 }
 
-std::unordered_map<std::string, int> SCStorageSubsystem::get_storage() {
-    std::unordered_map<std::string, int> result;
+std::map<std::string, int> SCStorageSubsystem::get_storage() {
+    std::map<std::string, int> result;
 
     for (auto [ loc, val ] : m_memory) {
         result.insert({ std::string(loc), val });

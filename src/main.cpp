@@ -10,6 +10,7 @@
 #include "parser/parser.h"
 #include "interpreter/interpreter.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
+#include "storage-subsystem/tso/tso-storage-subsystem.h"
 
 int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
     using namespace wmm_simulator;
@@ -20,7 +21,8 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
     
         // std::string program_path = argv[1];
-        std::string program_path = "../tests/test-data/message-passing.txt";
+        // std::string program_path = "../tests/test-data/message-passing.txt";
+        std::string program_path = "../tests/test-data/store-buffering.txt";
         std::string code = fs::FileReader::read_file(program_path);
 
 
@@ -55,12 +57,25 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         }
         std::cout << std::endl;
 
-        Interpreter<SCStorageSubsystem> interpreter(parse_result.first, parse_result.second);
-        auto storage = interpreter.run();
+        Interpreter<TSOStorageSubsystem> interpreter(parse_result.first, parse_result.second);
+        auto state = interpreter.run();
 
-        for (auto [ loc, val ] : storage) {
-            std::cout << "" << loc << ": " << val << std::endl;
+        std::cout << std::endl << "=========== Memory state ===========" << std::endl;
+        for (auto& [ loc, val ] : state.first) {
+            std::cout << loc << ": " << val << std::endl;
         }
+        std::cout << "====================================" << std::endl;
+
+        std::cout << std::endl << "=========== Thread states ==========" << std::endl;
+        for (auto& [ thread_id, registers ] : state.second) {
+            std::cout << "Thread " << thread_id << std::endl;
+            
+            for (auto& [ loc, val ] : registers) {
+                std::cout << loc << ": " << val << std::endl;
+            }
+            std::cout << std::endl;
+        }
+        std::cout << "====================================" << std::endl;
     }
     catch(const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;
