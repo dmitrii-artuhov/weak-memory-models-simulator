@@ -1,6 +1,7 @@
 #include "pso-storage-subsystem.h"
 
 #include <string>
+#include <sstream>
 #include <cassert>
 #include <map>
 
@@ -25,7 +26,7 @@ void PSOStorageSubsystem::write(
     int value,
     MemoryOrder memory_order
 ) {
-    m_store_buffers[thread_id][location_name].push(value);
+    m_store_buffers[thread_id][location_name].push_back(value);
     
     // TODO: should any weaker memory orders perform the same?
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
@@ -41,6 +42,40 @@ void PSOStorageSubsystem::fence(
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
         flush(thread_id);
     }
+}
+
+std::string PSOStorageSubsystem::get_printable_state() {
+    std::stringstream ss;
+
+    ss << "Memory:" << std::endl;
+    if (m_memory.empty()) ss << "[empty]" << std::endl;
+
+    for (auto& [ loc, val ] : m_memory) {
+        ss << loc << ": " << val << std::endl;
+    }
+
+    ss << "Store buffers:" << std::endl;
+    if (m_store_buffers.empty()) ss << "[empty]";
+
+    for (auto& [ thread_id, buffers ] : m_store_buffers) {
+        ss << "Thread " << thread_id << ": " << std::endl;
+
+        for (auto& [ loc, q ] : buffers) {
+            ss << "   " << loc << ": ";
+
+            for (auto it = q.begin(); it != q.end(); ++it) {
+                ss << *it;
+
+                if (it + 1 != q.end()) {
+                    ss << ", ";
+                }
+            }
+
+            ss << std::endl;
+        }
+    }
+
+    return ss.str();
 }
 
 std::map<std::string, int> PSOStorageSubsystem::get_storage() {
@@ -66,7 +101,6 @@ const std::vector <std::string_view> PSOStorageSubsystem::get_propagate_location
     std::vector <std::string_view> result(thread_buffer.size());
     size_t i = 0;
     for (auto& [ location_name, q ] : thread_buffer) {
-        std::cout << "got location: '" << location_name << "'" << std::endl; 
         result[i++] = location_name;
     }
 
@@ -86,7 +120,7 @@ void PSOStorageSubsystem::propagate(int thread_id, std::string_view location_nam
 
     auto& q = thread_buffer[location_name];
     int value = q.front();
-    q.pop();
+    q.pop_front();
     if (q.empty()) {
         thread_buffer.erase(location_name);
     }
@@ -99,7 +133,6 @@ void PSOStorageSubsystem::propagate(int thread_id, std::string_view location_nam
 }
 
 void PSOStorageSubsystem::flush_all_buffers() {
-    std::cout << "Flush buffers" << std::endl;
     std::vector <int> thread_ids;
     for (auto& [ thread_id, _ ] : m_store_buffers) {
         thread_ids.push_back(thread_id);

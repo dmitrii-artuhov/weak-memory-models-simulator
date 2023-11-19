@@ -40,11 +40,11 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         Lexer lexer(code.c_str());
         std::vector <Token> tokens = lexer.get_tokens();
 
-        for (auto& token : tokens) {
-            std::cout << token << std::endl;
-        }
+        // for (auto& token : tokens) {
+        //     std::cout << token << std::endl;
+        // }
 
-        std::cout << std::endl << "Parsing:" << std::endl;
+        // std::cout << std::endl << "Parsing:" << std::endl;
 
         Parser parser(tokens);
         std::pair<
@@ -52,29 +52,31 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
             std::unordered_map<std::string_view, int>
         > parse_result = parser.parse();
 
-        std::cout << "Labels table:" << std::endl;
-        for (auto [ label, instruction_index ] : parse_result.second) {
-            std::cout << label << ": " << instruction_index << std::endl;
-        }
-        std::cout << std::endl;
+        // std::cout << "Labels table:" << std::endl;
+        // for (auto [ label, instruction_index ] : parse_result.second) {
+        //     std::cout << label << ": " << instruction_index << std::endl;
+        // }
+        // std::cout << std::endl;
 
-        Interpreter<SCStorageSubsystem> interpreter(parse_result.first, parse_result.second);
+        Interpreter<TSOStorageSubsystem> interpreter(parse_result.first, parse_result.second, true);
         auto state = interpreter.run();
 
         std::cout << std::endl << "=========== Memory state ===========" << std::endl;
-        for (auto& [ loc, val ] : state.first) {
-            std::cout << loc << ": " << val << std::endl;
-        }
+        // for (auto& [ loc, val ] : state.first) {
+        //     std::cout << loc << ": " << val << std::endl;
+        // }
+        std::cout << state.first->get_printable_state() << std::endl;
         std::cout << "====================================" << std::endl;
 
         std::cout << std::endl << "=========== Thread states ==========" << std::endl;
-        for (auto& [ thread_id, registers ] : state.second) {
+        for (auto& [ thread_id, thread_subsystem ] : state.second) {
             std::cout << "Thread " << thread_id << std::endl;
             
-            for (auto& [ loc, val ] : registers) {
-                std::cout << loc << ": " << val << std::endl;
-            }
-            std::cout << std::endl;
+            std::cout << thread_subsystem.get_printable_state();
+            // for (auto& [ loc, val ] : registers) {
+            //     std::cout << loc << ": " << val << std::endl;
+            // }
+            // std::cout << std::endl;
         }
         std::cout << "====================================" << std::endl;
     }

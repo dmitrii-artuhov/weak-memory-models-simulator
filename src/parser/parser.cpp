@@ -114,7 +114,7 @@ std::shared_ptr<StatementNode> Parser::parse_statement() {
     if (is_labeled_statement_next()) {
         label = peek().get_lexeme();
         advance(); advance(); // skip label name and semicolon
-        std::cout << "Labeled: " << label << std::endl;
+        // std::cout << "Labeled: " << label << std::endl;
     }
 
     const Token& t = peek();
@@ -122,61 +122,61 @@ std::shared_ptr<StatementNode> Parser::parse_statement() {
     switch (t.get_type()) {
         case Token::Type::IDENTIFIER: {
             // assignment
-            std::cout << "parse assignment" << std::endl;
+            // std::cout << "parse assignment" << std::endl;
             statement = parse_assignment();
             break;
         }
         case Token::Type::CONDITION: {
             // condition
-            std::cout << "parse condition" << std::endl;
+            // std::cout << "parse condition" << std::endl;
             statement = parse_condition();
             break;
         }
         case Token::Type::GOTO: {
             // goto
-            std::cout << "parse goto" << std::endl;
+            // std::cout << "parse goto" << std::endl;
             statement = parse_goto();
             break;
         }
         case Token::Type::THREAD_GOTO: {
             // thread creation
-            std::cout << "parse thread_goto" << std::endl;
+            // std::cout << "parse thread_goto" << std::endl;
             statement = parse_thread_goto();
             break;
         }
         case Token::Type::LOAD: {
             // load
-            std::cout << "parse load" << std::endl;
+            // std::cout << "parse load" << std::endl;
             statement = parse_double_argument_call<LoadNode, Token::Type::LOAD>();
             break;
         }
         case Token::Type::STORE: {
             // store
-            std::cout << "parse store" << std::endl;
+            // std::cout << "parse store" << std::endl;
             statement = parse_double_argument_call<StoreNode, Token::Type::STORE>();
             break;
         }
         case Token::Type::FAI: {
             // fai
-            std::cout << "parse fai" << std::endl;
+            // std::cout << "parse fai" << std::endl;
             statement = parse_double_argument_call<FaiNode, Token::Type::FAI>();
             break;
         }
         case Token::Type::CAS: {
             // cas
-            std::cout << "parse cas" << std::endl;
+            // std::cout << "parse cas" << std::endl;
             statement = parse_cas_call();
             break;
         }
         case Token::Type::FENCE: {
             // fence
-            std::cout << "parse fence" << std::endl;
+            // std::cout << "parse fence" << std::endl;
             statement = parse_fence_call();
             break;
         }
         case Token::Type::END: {
             // end of execution
-            std::cout << "parse end" << std::endl;
+            // std::cout << "parse end" << std::endl;
             statement = std::shared_ptr<AstNode>(new EndNode());
             advance();
             break;

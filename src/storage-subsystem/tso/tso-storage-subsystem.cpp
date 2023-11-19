@@ -1,6 +1,7 @@
 #include "tso-storage-subsystem.h"
 
 #include <string>
+#include <sstream>
 #include <cassert>
 #include <map>
 
@@ -25,7 +26,7 @@ void TSOStorageSubsystem::write(
     int value,
     MemoryOrder memory_order
 ) {
-    m_store_buffers[thread_id].push({ location_name, value });
+    m_store_buffers[thread_id].push_back({ location_name, value });
 
     // TODO: should any weaker memory orders perform the same?
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
@@ -42,6 +43,37 @@ void TSOStorageSubsystem::fence(
         flush(thread_id);
     }
 }
+
+std::string TSOStorageSubsystem::get_printable_state() {
+    std::stringstream ss;
+
+    ss << "Memory:" << std::endl;
+    if (m_memory.empty()) ss << "[empty]" << std::endl;
+
+    for (auto& [ loc, val ] : m_memory) {
+        ss << loc << ": " << val << std::endl;
+    }
+
+    ss << "Store buffers: " << std::endl;
+    if (m_store_buffers.empty()) ss << "[empty]";
+
+    for (auto& [ thread_id, q ] : m_store_buffers) {
+        ss << "Thread " << thread_id << ": ";
+
+        for (auto it = q.begin(); it != q.end(); ++it) {
+            ss << "{" << it->first << ", " << it->second << "}";
+
+            if (it + 1 != q.end()) {
+                ss << ", ";
+            }
+        }
+
+        ss << std::endl;
+    }
+
+    return ss.str();
+}
+
 
 std::map<std::string, int> TSOStorageSubsystem::get_storage() {
     std::map<std::string, int> result;
@@ -67,7 +99,7 @@ void TSOStorageSubsystem::propagate(int thread_id) {
     assert(("Queue must not be empty when performing propagate on thread in TSO: " + std::to_string(thread_id), !q.empty()));
     
     auto [ location_name, value ] = q.front();
-    q.pop();
+    q.pop_front();
     if (q.empty()) {
         m_store_buffers.erase(thread_id);
     }
@@ -76,7 +108,6 @@ void TSOStorageSubsystem::propagate(int thread_id) {
 }
 
 void TSOStorageSubsystem::flush_all_buffers() {
-    std::cout << "Flush buffers" << std::endl;
     std::vector <int> thread_ids;
     for (auto& [ thread_id, _ ] : m_store_buffers) {
         thread_ids.push_back(thread_id);
@@ -95,7 +126,7 @@ void TSOStorageSubsystem::flush(int thread_id) {
     auto& q = m_store_buffers[thread_id];
     while (!q.empty()) {
         auto [ location_name, value ] = q.front();
-        q.pop();
+        q.pop_front();
         m_memory[location_name] = value;
     }
 

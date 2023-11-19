@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <map>
-#include <unordered_map>
+#include <algorithm>
 #include <type_traits>
 
 #include "thread-subsystem/thread-subsystem.h"
@@ -37,11 +37,12 @@ class Interpreter : public Visitor {
 public:
     Interpreter(
         std::shared_ptr<ProgramNode> root,
-        std::unordered_map<std::string_view, int> labeled_instructions
+        std::unordered_map<std::string_view, int> labeled_instructions,
+        bool is_verbose = false
     );
     std::pair<
-        std::map<std::string, int>,
-        std::map<int, std::map<std::string, int>>
+        std::shared_ptr<StorageSubsystem>,
+        std::map<int, ThreadSubsystem>
     > run();
     
     void visit(const AstNode* node) override;
@@ -67,19 +68,23 @@ private:
     
     std::shared_ptr<ProgramNode> m_root;
     std::unordered_map<std::string_view, int> m_labeled_instructions;
+    bool m_is_verbose;
     std::map<int, ThreadState> m_threads;
-    std::map<int, std::map<std::string, int>> m_finished_thread_states;
+    std::map<int, ThreadSubsystem> m_finished_thread_states;
     std::shared_ptr<StorageSubsystem> m_storage;
     int m_max_thread_index = 0;
     int m_current_thread = 0;
-    int m_last_evaluated_value; // for visiting expressions
+    int m_last_evaluated_value = 0; // for visiting expressions
     int m_goto_instruction = -1; // for inner nodes to tell StatementNode that goto command was executed
 
+    void init();
     int pick_random_thread() const;
     bool has_active_threads() const;
+    void interleave_thread();
+    std::string get_log_prefix();
     std::pair<
-        std::map<std::string, int>,
-        std::map<int, std::map<std::string, int>>
+        std::shared_ptr<StorageSubsystem>,
+        std::map<int, ThreadSubsystem>
     > get_state();
 };
 

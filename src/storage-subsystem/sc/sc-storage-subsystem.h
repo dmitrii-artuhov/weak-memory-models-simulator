@@ -30,10 +30,11 @@ public:
         MemoryOrder memory_order
     ) override;
     
+    std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;
 
 private:
-    std::unordered_map<std::string_view, int> m_memory; // { location name, value }
+    std::map<std::string_view, int> m_memory; // { location name, value }
 };
 
 }

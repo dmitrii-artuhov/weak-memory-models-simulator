@@ -11,6 +11,7 @@
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
 #include "ast/node.h"
+#include "utils/node-stringifier.h"
 
 
 namespace wmm_simulator {
@@ -18,57 +19,52 @@ namespace wmm_simulator {
 template<class T>
 Interpreter<T>::Interpreter(
     std::shared_ptr<ProgramNode> root,
-    std::unordered_map<std::string_view, int> labeled_instructions
-): m_root(root), m_labeled_instructions(std::move(labeled_instructions)) {
+    std::unordered_map<std::string_view, int> labeled_instructions,
+    bool is_verbose
+): m_root(root), m_labeled_instructions(std::move(labeled_instructions)), m_is_verbose(is_verbose) {}
+
+template<class T>
+void Interpreter<T>::init() {
+    m_max_thread_index = 0;
+    m_current_thread = 0;
+    m_last_evaluated_value = 0;
+    m_goto_instruction = -1;
+    
+    m_threads.clear();
+    m_finished_thread_states.clear();
     
     m_storage = std::shared_ptr<StorageSubsystem>(new T());
-
-    // Start main thread
+    // Spawn main thread
     m_threads[0] = {
         0, // since END instuction is always in the ast
         ThreadSubsystem()
     };
 }
 
-// template<class T>
-// std::unordered_map<std::string, int> Interpreter<T>::run() {
-//     while (has_active_threads() || m_storage->has_eps_transitions()) {
-//         // pick current thread
-//         m_current_thread = pick_random_thread();
-
-//         std::cout << "Executing thread: " << m_current_thread << std::endl;
-        
-//         // eps transitions
-//         if (m_storage->has_eps_transitions() && utils::get_random_in_range(0, 1) == 0) {
-//             m_storage->perform_eps_transition();
-//         }
-//         else {
-//             // non-eps transitions
-//             int instruction = m_threads[m_current_thread].instruction_index;
-//             m_root->get_statements()[instruction]->accept(this);
-//         }
-//     }
-
-//     return m_storage->get_storage();
-// }
-
 /*  Specialization for a SC storage subsystem */
 template<>
 std::pair<
-    std::map<std::string, int>,
-    std::map<int, std::map<std::string, int>>
+    std::shared_ptr<StorageSubsystem>,
+    std::map<int, ThreadSubsystem>
 > Interpreter<SCStorageSubsystem>::run() {
+    init();
+
     while (has_active_threads()) {
         // TODO: implement skipping of unrelated to storage subsystem operations 
 
-        // pick current thread
-        m_current_thread = pick_random_thread();
+        interleave_thread();
 
-        std::cout << "Executing thread: " << m_current_thread << std::endl;
-        
         // non-eps transitions
         int instruction = m_threads[m_current_thread].instruction_index;
         m_root->get_statements()[instruction]->accept(this);
+
+        if (m_is_verbose) {
+            std::cout << m_storage->get_printable_state() << std::endl;
+            
+            if (m_threads.count(m_current_thread)) {
+                std::cout << "Registers:" << std::endl << m_threads[m_current_thread].thread_subsystem.get_printable_state() << std::endl;
+            }
+        }
     }
 
     return get_state();
@@ -78,32 +74,40 @@ std::pair<
 /*  Specialization for a TSO storage subsystem */
 template<>
 std::pair<
-    std::map<std::string, int>,
-    std::map<int, std::map<std::string, int>>
+    std::shared_ptr<StorageSubsystem>,
+    std::map<int, ThreadSubsystem>
 > Interpreter<TSOStorageSubsystem>::run() {
+    init();
+
     std::shared_ptr<TSOStorageSubsystem> tso_storage = std::static_pointer_cast<TSOStorageSubsystem> (m_storage);
     
     while (has_active_threads()) {
         // TODO: implement skipping of unrelated to storage subsystem operations 
 
-        // pick current thread
-        m_current_thread = pick_random_thread();
+        interleave_thread();
 
-        std::cout << "Executing thread: " << m_current_thread << std::endl;
-        
         if (
             tso_storage->has_eps_transitions(m_current_thread) &&
             utils::get_random_in_range(0, 1) == 0
         ) {
             // eps transitions
-            std::cout << "Perform propagate" << std::endl;
+            if (m_is_verbose) {
+                std::cout << get_log_prefix() << "perform propagate" << std::endl << std::endl;
+            }
             tso_storage->propagate(m_current_thread);
         }
         else {
             // non-eps transitions
-            std::cout << "Perform step" << std::endl;
             int instruction = m_threads[m_current_thread].instruction_index;
             m_root->get_statements()[instruction]->accept(this);
+        }
+
+        if (m_is_verbose) {
+            std::cout << m_storage->get_printable_state() << std::endl;
+            
+            if (m_threads.count(m_current_thread)) {
+                std::cout << "Registers:" << std::endl << m_threads[m_current_thread].thread_subsystem.get_printable_state() << std::endl;
+            }
         }
     }
 
@@ -116,38 +120,38 @@ std::pair<
 /*  Specialization for a PSO storage subsystem */
 template<>
 std::pair<
-    std::map<std::string, int>,
-    std::map<int, std::map<std::string, int>>
+    std::shared_ptr<StorageSubsystem>,
+    std::map<int, ThreadSubsystem>
 > Interpreter<PSOStorageSubsystem>::run() {
+    init();
+
     std::shared_ptr<PSOStorageSubsystem> pso_storage = std::static_pointer_cast<PSOStorageSubsystem> (m_storage);
     
     while (has_active_threads()) {
         // TODO: implement skipping of unrelated to storage subsystem operations 
 
-        // pick current thread
-        m_current_thread = pick_random_thread();
+        interleave_thread();
 
-        std::cout << "Executing thread: " << m_current_thread << std::endl;
-        
         if (
             pso_storage->has_eps_transitions(m_current_thread) &&
             utils::get_random_in_range(0, 1) == 0
         ) {
             // eps transitions
-            std::cout << "Perform propagate" << std::endl;
             auto location_names = pso_storage->get_propagate_locations(m_current_thread);
 
             if (!location_names.empty()) {
-                std::cout << "Locations: ["; 
-                for (size_t i = 0; i < location_names.size(); ++i) {
-                    std::cout << "'" << location_names[i] << "'";
-                    if (i != location_names.size() - 1) std::cout << ", ";
-                }
-                std::cout << "]" << std::endl;
-
                 size_t index = utils::get_random_in_range(0, location_names.size() - 1);
+                
+                if (m_is_verbose) {
+                    std::cout << get_log_prefix() << "perform propagate on location '" << location_names[index] << "'";
 
-                std::cout << "Perform propagate on location '" << location_names[index] << "'" << std::endl;
+                    std::cout << " (all locations: ["; 
+                    for (size_t i = 0; i < location_names.size(); ++i) {
+                        std::cout << "'" << location_names[i] << "'";
+                        if (i != location_names.size() - 1) std::cout << ", ";
+                    }
+                    std::cout << "])" << std::endl;
+                }
                 
                 pso_storage->propagate(
                     m_current_thread,
@@ -157,9 +161,16 @@ std::pair<
         }
         else {
             // non-eps transitions
-            std::cout << "Perform step" << std::endl;
             int instruction = m_threads[m_current_thread].instruction_index;
             m_root->get_statements()[instruction]->accept(this);
+        }
+
+        if (m_is_verbose) {
+            std::cout << m_storage->get_printable_state() << std::endl;
+            
+            if (m_threads.count(m_current_thread)) {
+                std::cout << "Registers:" << std::endl << m_threads[m_current_thread].thread_subsystem.get_printable_state() << std::endl;
+            }
         }
     }
 
@@ -184,14 +195,29 @@ bool Interpreter<T>::has_active_threads() const {
     return !m_threads.empty();
 }
 
+template<class T>
+void Interpreter<T>::interleave_thread() {
+    // pick current thread
+    int prev_thread_id = m_current_thread;
+    m_current_thread = pick_random_thread();
+
+    if (prev_thread_id != m_current_thread && m_is_verbose) {
+        std::cout << "Thread interleaving: " << prev_thread_id << " -> " << m_current_thread << std::endl << std::endl;
+    }
+}
+
+template<class T>
+std::string Interpreter<T>::get_log_prefix() {
+    return "t " + std::to_string(m_current_thread) + "> ";
+}
 
 template<class T>
 std::pair<
-    std::map<std::string, int>,
-    std::map<int, std::map<std::string, int>>
+    std::shared_ptr<StorageSubsystem>,
+    std::map<int, ThreadSubsystem>
 > Interpreter<T>::get_state() {
     return {
-        m_storage->get_storage(),
+        m_storage,
         m_finished_thread_states
     };
 }
@@ -203,7 +229,11 @@ void Interpreter<T>::visit(const AstNode*) {
 
 template<class T>
 void Interpreter<T>::visit(const StatementNode* node) {
-    std::cout << "Interpret StatementNode" << std::endl;
+    // std::cout << "Interpret StatementNode" << std::endl;
+
+    if (m_is_verbose) {
+        std::cout << get_log_prefix() << utils::NodeStringifier().stringify(node) << std::endl << std::endl;
+    }
     
     node->get_statement()->accept(this); // inner nodes will set `m_goto_instruction` instruction index if required
 
@@ -220,7 +250,7 @@ void Interpreter<T>::visit(const StatementNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const GotoNode* node) {
-    std::cout << "Interpret GotoNode" << std::endl;
+    // std::cout << "Interpret GotoNode" << std::endl;
     const auto goto_label = node->get_goto_label();
 
     if (!m_labeled_instructions.count(goto_label)) {
@@ -232,7 +262,7 @@ void Interpreter<T>::visit(const GotoNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const ThreadGotoNode* node) {
-    std::cout << "Interpret ThreadGotoNode" << std::endl;
+    // std::cout << "Interpret ThreadGotoNode" << std::endl;
     const auto thread_start_label = node->get_thread_start_label();
     
     if (!m_labeled_instructions.count(thread_start_label)) {
@@ -248,7 +278,7 @@ void Interpreter<T>::visit(const ThreadGotoNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const AssignmentNode* node) {
-    std::cout << "Interpret AssignmentNode" << std::endl;
+    // std::cout << "Interpret AssignmentNode" << std::endl;
     node->get_expression()->accept(this); // evaluate expression to m_last_evaluated_value
     m_threads[m_current_thread].thread_subsystem.set(
         node->get_register_name(),
@@ -258,13 +288,13 @@ void Interpreter<T>::visit(const AssignmentNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const NumberNode* node) {
-    std::cout << "Interpret NumberNode" << std::endl;
+    // std::cout << "Interpret NumberNode" << std::endl;
     m_last_evaluated_value = node->get_value();
 }
 
 template<class T>
 void Interpreter<T>::visit(const BinOpNode* node) {
-    std::cout << "Interpret BinOpNode" << std::endl;
+    // std::cout << "Interpret BinOpNode" << std::endl;
     auto& thread_subsystem = m_threads[m_current_thread].thread_subsystem;
     
     int left = thread_subsystem.get(node->get_left_register());
@@ -293,7 +323,7 @@ void Interpreter<T>::visit(const BinOpNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const ConditionNode* node) {
-    std::cout << "Interpret ConditionNode" << std::endl;
+    // std::cout << "Interpret ConditionNode" << std::endl;
     
     auto& thread_subsystem = m_threads[m_current_thread].thread_subsystem;
     if (thread_subsystem.get(node->get_register_name())) {
@@ -307,7 +337,7 @@ void Interpreter<T>::visit(const ConditionNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const LoadNode* node) {
-    std::cout << "Interpret LoadNode" << std::endl;
+    // std::cout << "Interpret LoadNode" << std::endl;
 
     int value = m_storage->read(
         m_current_thread,
@@ -322,7 +352,7 @@ void Interpreter<T>::visit(const LoadNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const StoreNode* node) {
-    std::cout << "Interpret StoreNode" << std::endl;
+    // std::cout << "Interpret StoreNode" << std::endl;
     int value = m_threads[m_current_thread].thread_subsystem.get(
         node->get_register_name()
     );
@@ -336,7 +366,7 @@ void Interpreter<T>::visit(const StoreNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const FenceNode* node) {
-    std::cout << "Interpret FenceNode" << std::endl;
+    // std::cout << "Interpret FenceNode" << std::endl;
 
     m_storage->fence(
         m_current_thread,
@@ -346,7 +376,7 @@ void Interpreter<T>::visit(const FenceNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const CasNode* node) {
-    std::cout << "Interpret CasNode" << std::endl;
+    // std::cout << "Interpret CasNode" << std::endl;
 
     auto location_name = node->get_location_name();
     auto memory_order = node->get_memory_order();
@@ -375,7 +405,7 @@ void Interpreter<T>::visit(const CasNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const FaiNode* node) {
-    std::cout << "Interpret FaiNode" << std::endl;
+    // std::cout << "Interpret FaiNode" << std::endl;
     
     auto register_name = node->get_register_name();
     auto location_name = node->get_location_name();
@@ -401,7 +431,7 @@ void Interpreter<T>::visit(const FaiNode* node) {
 
 template<class T>
 void Interpreter<T>::visit(const EndNode*) {
-    std::cout << "Interpret EndNode" << std::endl;
+    // std::cout << "Interpret EndNode" << std::endl;
     
     // auto registers = m_threads[m_current_thread].thread_subsystem.get_registers();
     // std::cout << "Thread ID: " << m_current_thread << std::endl;
@@ -410,7 +440,7 @@ void Interpreter<T>::visit(const EndNode*) {
     // }
     // std::cout << std::endl;
     
-    m_finished_thread_states[m_current_thread] = m_threads[m_current_thread].thread_subsystem.get_registers();
+    m_finished_thread_states[m_current_thread] = m_threads[m_current_thread].thread_subsystem;
 
     m_threads.erase(m_current_thread);
 }

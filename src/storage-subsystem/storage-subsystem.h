@@ -25,6 +25,7 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) = 0;
+    virtual std::string get_printable_state() = 0;
     virtual std::map<std::string, int> get_storage() = 0;
 };
 

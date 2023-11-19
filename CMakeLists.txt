@@ -26,6 +26,9 @@ set(SIMULATOR_SRCS
     src/utils/utils.cpp
     src/utils/utils.h
 
+    src/utils/node-stringifier.cpp
+    src/utils/node-stringifier.h
+
     src/parser/parser.cpp
     src/parser/parser.h
 

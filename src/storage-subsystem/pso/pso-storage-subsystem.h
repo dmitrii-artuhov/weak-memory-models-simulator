@@ -3,7 +3,7 @@
 #include "storage-subsystem/storage-subsystem.h"
 
 #include <iostream>
-#include <queue>
+#include <deque>
 #include <string>
 #include <algorithm>
 
@@ -31,6 +31,7 @@ public:
         MemoryOrder memory_order
     ) override;
     
+    std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;
 
     bool has_eps_transitions(int thread_id) const;
@@ -44,7 +45,7 @@ private:
         int,
         std::unordered_map<
             std::string_view,
-            std::queue<int>
+            std::deque<int>
         >
     > m_store_buffers; // { thread_id, { location name, [v1, v2, ...] } }
 

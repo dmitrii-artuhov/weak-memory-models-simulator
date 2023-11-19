@@ -1,6 +1,7 @@
 #include "sc-storage-subsystem.h"
 
 #include <string>
+#include <sstream>
 #include <map>
 
 namespace wmm_simulator {
@@ -34,6 +35,19 @@ void SCStorageSubsystem::fence(
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
     // no-op for fence
+}
+
+std::string SCStorageSubsystem::get_printable_state() {
+    std::stringstream ss;
+
+    ss << "Memory:" << std::endl;
+    if (m_memory.empty()) ss << "[empty]" << std::endl;
+
+    for (auto& [ loc, val ] : m_memory) {
+        ss << loc << ": " << val << std::endl;
+    }
+
+    return ss.str();
 }
 
 std::map<std::string, int> SCStorageSubsystem::get_storage() {
