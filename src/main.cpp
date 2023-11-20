@@ -61,22 +61,15 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         Interpreter<TSOStorageSubsystem> interpreter(parse_result.first, parse_result.second, true);
         auto state = interpreter.run();
 
+        /*---- Print final results of execution -----------------------------------*/
         std::cout << std::endl << "=========== Memory state ===========" << std::endl;
-        // for (auto& [ loc, val ] : state.first) {
-        //     std::cout << loc << ": " << val << std::endl;
-        // }
         std::cout << state.first->get_printable_state() << std::endl;
         std::cout << "====================================" << std::endl;
 
         std::cout << std::endl << "=========== Thread states ==========" << std::endl;
         for (auto& [ thread_id, thread_subsystem ] : state.second) {
             std::cout << "Thread " << thread_id << std::endl;
-            
             std::cout << thread_subsystem.get_printable_state();
-            // for (auto& [ loc, val ] : registers) {
-            //     std::cout << loc << ": " << val << std::endl;
-            // }
-            // std::cout << std::endl;
         }
         std::cout << "====================================" << std::endl;
     }
