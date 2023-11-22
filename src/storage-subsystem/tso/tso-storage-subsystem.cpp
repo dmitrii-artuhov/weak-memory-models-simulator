@@ -8,16 +8,33 @@
 namespace wmm_simulator {
 
 int TSOStorageSubsystem::read(
-    int,
+    int thread_id,
     std::string_view location_name,
     MemoryOrder
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
-    if (!m_memory.count(location_name)) {
-        return 0;
+    bool found = false;
+    int result = 0;
+
+    if (m_store_buffers.count(thread_id)) {
+        auto& d = m_store_buffers[thread_id];
+
+        for (int i = d.size() - 1; i >= 0; i--) {
+            auto [ loc, val ] = d[i];
+
+            if (loc == location_name) {
+                found = true;
+                result = val;
+                break;
+            }
+        }
+    }
+    
+    if (!found && m_memory.count(location_name)) {
+        result = m_memory[location_name];
     }
 
-    return m_memory[location_name];
+    return result;
 }
 
 void TSOStorageSubsystem::write(

@@ -22,7 +22,7 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
     
         // std::string program_path = argv[1];
-        std::string program_path = "../tests/test-data/message-passing.txt";
+        std::string program_path = "../tests/test-data/single-thread.txt";
         // std::string program_path = "../tests/test-data/store-buffering.txt";
         std::string code = fs::FileReader::read_file(program_path);
 
@@ -58,7 +58,7 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
         // std::cout << std::endl;
 
-        Interpreter<TSOStorageSubsystem> interpreter(parse_result.first, parse_result.second, true);
+        Interpreter<PSOStorageSubsystem> interpreter(parse_result.first, parse_result.second, true);
         auto state = interpreter.run();
 
         /*---- Print final results of execution -----------------------------------*/

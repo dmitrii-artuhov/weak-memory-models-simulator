@@ -1,0 +1,5 @@
+r = 1
+store RLX #x r
+r = 3
+store RLX #x r
+load RLX #x a

@@ -8,16 +8,28 @@
 namespace wmm_simulator {
 
 int PSOStorageSubsystem::read(
-    int,
+    int thread_id,
     std::string_view location_name,
     MemoryOrder
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
-    if (!m_memory.count(location_name)) {
-        return 0;
+    bool found = false;
+    int result = 0;
+
+    if (
+        m_store_buffers.count(thread_id) &&
+        m_store_buffers[thread_id].count(location_name) &&
+        !m_store_buffers[thread_id][location_name].empty()
+    ) {
+        found = true;
+        result = m_store_buffers[thread_id][location_name].back();
+    }
+    
+    if (!found && m_memory.count(location_name)) {
+        result = m_memory[location_name];
     }
 
-    return m_memory[location_name];
+    return result;
 }
 
 void PSOStorageSubsystem::write(
