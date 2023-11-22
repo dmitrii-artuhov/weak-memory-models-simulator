@@ -25,6 +25,8 @@
 
 namespace wmm_simulator {
 
+class ProgramState;
+
 Parser::Parser(std::vector <Token> tokens): m_tokens(std::move(tokens)) {}
 
 std::pair<
@@ -417,11 +419,11 @@ std::shared_ptr<AstNode> Parser::parse_fence_call() {
 Parser::LabeledInstructionsRetriever::LabeledInstructionsRetriever(AstNode* node): m_node(node) {}
 
 std::unordered_map<std::string_view, int> Parser::LabeledInstructionsRetriever::get_labeled_instructions() {
-    m_node->accept(this);
+    m_node->accept(this, nullptr);
     return m_instructions;
 }
 
-void Parser::LabeledInstructionsRetriever::visit(const ProgramNode* node) {
+void Parser::LabeledInstructionsRetriever::visit(const ProgramNode* node, ProgramState*) {
     const auto& statements = node->get_statements();
 
     for (size_t index = 0; index < statements.size(); ++index) {

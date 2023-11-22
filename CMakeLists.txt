@@ -12,7 +12,7 @@ set(TESTS_TARGET tests)
 
 #### compile options for all targets
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    add_compile_options(-Wall -Wextra -Werror) # why these cause the build crash -fsanitize=address -fsanitize=leak ?
+    add_compile_options() #-Wall -Wextra -Werror # why these cause the build crash -fsanitize=address -fsanitize=leak ?
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W4 /WX)
 endif()
@@ -26,8 +26,8 @@ set(SIMULATOR_SRCS
     src/utils/utils.cpp
     src/utils/utils.h
 
-    src/utils/node-stringifier.cpp
-    src/utils/node-stringifier.h
+    # src/utils/node-stringifier.cpp
+    # src/utils/node-stringifier.h
 
     src/parser/parser.cpp
     src/parser/parser.h
@@ -48,6 +48,9 @@ set(SIMULATOR_SRCS
 
     src/thread-subsystem/thread-subsystem.cpp
     src/thread-subsystem/thread-subsystem.h
+
+    src/interpreter/program-state.cpp
+    src/interpreter/program-state.h
     
     # storage subsystems
     src/storage-subsystem/storage-subsystem.h

@@ -9,6 +9,8 @@ namespace wmm_simulator {
 
 class SCStorageSubsystem : public StorageSubsystem {
 public:
+    SCStorageSubsystem();
+    SCStorageSubsystem(const SCStorageSubsystem& other);
     ~SCStorageSubsystem() {
         // TODO: remove
         std::cout << "~SCStorageSubsystem" << std::endl;
@@ -29,7 +31,8 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) override;
-    
+    StorageSubsystem* make_copy() const override;
+
     std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;
 

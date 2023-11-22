@@ -22,8 +22,9 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
     
         // std::string program_path = argv[1];
-        std::string program_path = "../tests/test-data/single-thread.txt";
-        // std::string program_path = "../tests/test-data/store-buffering.txt";
+        // std::string program_path = "../tests/test-data/single-thread.txt";
+        // std::string program_path = "../tests/test-data/message-passing.txt";
+        std::string program_path = "../tests/test-data/store-buffering.txt";
         std::string code = fs::FileReader::read_file(program_path);
 
 
@@ -58,20 +59,20 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
         // std::cout << std::endl;
 
-        Interpreter<PSOStorageSubsystem> interpreter(parse_result.first, parse_result.second, true);
-        auto state = interpreter.run();
+        Interpreter interpreter(parse_result.first, parse_result.second);
+        interpreter.run<SCStorageSubsystem>();
 
         /*---- Print final results of execution -----------------------------------*/
-        std::cout << std::endl << "=========== Memory state ===========" << std::endl;
-        std::cout << state.first->get_printable_state() << std::endl;
-        std::cout << "====================================" << std::endl;
+        // std::cout << std::endl << "=========== Memory state ===========" << std::endl;
+        // std::cout << state.first->get_printable_state() << std::endl;
+        // std::cout << "====================================" << std::endl;
 
-        std::cout << std::endl << "=========== Thread states ==========" << std::endl;
-        for (auto& [ thread_id, thread_subsystem ] : state.second) {
-            std::cout << "Thread " << thread_id << std::endl;
-            std::cout << thread_subsystem.get_printable_state();
-        }
-        std::cout << "====================================" << std::endl;
+        // std::cout << std::endl << "=========== Thread states ==========" << std::endl;
+        // for (auto& [ thread_id, thread_subsystem ] : state.second) {
+        //     std::cout << "Thread " << thread_id << std::endl;
+        //     std::cout << thread_subsystem.get_printable_state();
+        // }
+        // std::cout << "====================================" << std::endl;
     }
     catch(const std::runtime_error& err) {
         std::cerr << err.what() << std::endl;

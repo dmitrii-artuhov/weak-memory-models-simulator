@@ -7,6 +7,13 @@
 
 namespace wmm_simulator {
 
+PSOStorageSubsystem::PSOStorageSubsystem() {}
+
+PSOStorageSubsystem::PSOStorageSubsystem(const PSOStorageSubsystem& other) {
+    m_memory = other.m_memory;
+    m_store_buffers = other.m_store_buffers;
+}
+
 int PSOStorageSubsystem::read(
     int thread_id,
     std::string_view location_name,
@@ -54,6 +61,10 @@ void PSOStorageSubsystem::fence(
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
         flush(thread_id);
     }
+}
+
+StorageSubsystem* PSOStorageSubsystem::make_copy() const {
+    return new PSOStorageSubsystem(*this);
 }
 
 std::string PSOStorageSubsystem::get_printable_state() {

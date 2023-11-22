@@ -7,6 +7,13 @@
 
 namespace wmm_simulator {
 
+TSOStorageSubsystem::TSOStorageSubsystem() {}
+
+TSOStorageSubsystem::TSOStorageSubsystem(const TSOStorageSubsystem& other) {
+    m_memory = other.m_memory;
+    m_store_buffers = other.m_store_buffers;
+}
+
 int TSOStorageSubsystem::read(
     int thread_id,
     std::string_view location_name,
@@ -89,6 +96,10 @@ std::string TSOStorageSubsystem::get_printable_state() {
     }
 
     return ss.str();
+}
+
+StorageSubsystem* TSOStorageSubsystem::make_copy() const {
+    return new TSOStorageSubsystem(*this);
 }
 
 

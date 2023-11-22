@@ -6,6 +6,11 @@
 
 namespace wmm_simulator {
 
+SCStorageSubsystem::SCStorageSubsystem() {}
+
+SCStorageSubsystem::SCStorageSubsystem(const SCStorageSubsystem& other) {
+    m_memory = other.m_memory;
+}
 
 int SCStorageSubsystem::read(
     int,
@@ -35,6 +40,10 @@ void SCStorageSubsystem::fence(
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
     // no-op for fence
+}
+
+StorageSubsystem* SCStorageSubsystem::make_copy() const {
+    return new SCStorageSubsystem(*this);
 }
 
 std::string SCStorageSubsystem::get_printable_state() {

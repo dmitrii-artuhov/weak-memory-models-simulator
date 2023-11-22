@@ -18,7 +18,7 @@ public:
         std::string register_expected,
         std::string register_desired
     );
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
 
     MemoryOrder get_memory_order() const;
     const std::string_view get_location_name() const;

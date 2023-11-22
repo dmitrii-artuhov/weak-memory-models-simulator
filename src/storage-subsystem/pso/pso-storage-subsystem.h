@@ -11,6 +11,8 @@ namespace wmm_simulator {
 
 class PSOStorageSubsystem : public StorageSubsystem {
 public:
+    PSOStorageSubsystem();
+    PSOStorageSubsystem(const PSOStorageSubsystem& other);
     ~PSOStorageSubsystem() {
         std::cout << "~PSOStorageSubsystem" << std::endl;
     }
@@ -30,6 +32,7 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) override;
+    StorageSubsystem* make_copy() const override;
     
     std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;

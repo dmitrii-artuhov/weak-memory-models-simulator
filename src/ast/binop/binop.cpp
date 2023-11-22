@@ -12,8 +12,8 @@ BinOpNode::BinOpNode(
     std::string right_register
 ): m_left_register(std::move(left_register)), m_operation(operation), m_right_register(std::move(right_register)) {}
 
-void BinOpNode::accept(Visitor* visitor) const {
-    visitor->visit(this);
+void BinOpNode::accept(Visitor* visitor, ProgramState* state) const {
+    visitor->visit(this, state);
 }
 
 const std::string_view BinOpNode::get_left_register() const {

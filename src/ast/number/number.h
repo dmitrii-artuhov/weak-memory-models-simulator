@@ -9,7 +9,7 @@ namespace wmm_simulator {
 class NumberNode final : public AstNode {
 public:
     NumberNode(int value);
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
 
     int get_value() const;
 

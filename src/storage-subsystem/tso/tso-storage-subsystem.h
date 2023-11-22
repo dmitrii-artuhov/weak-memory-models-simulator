@@ -11,6 +11,8 @@ namespace wmm_simulator {
 
 class TSOStorageSubsystem : public StorageSubsystem {
 public:
+    TSOStorageSubsystem();
+    TSOStorageSubsystem(const TSOStorageSubsystem& other);
     ~TSOStorageSubsystem() {
         std::cout << "~TSOStorageSubsystem" << std::endl;
     }
@@ -30,11 +32,12 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) override;
+    StorageSubsystem* make_copy() const override;
     
     std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;
     
-    bool has_eps_transitions(int thread_id) const;
+    bool has_eps_transitions(int thread_id) const override;
     void propagate(int thread_id);
     void flush_all_buffers();
 

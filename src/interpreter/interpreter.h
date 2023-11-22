@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <type_traits>
 
+// #include "program-state.h"
 #include "thread-subsystem/thread-subsystem.h"
 #include "storage-subsystem/storage-subsystem.h"
 #include "ast/node.h"
@@ -25,67 +26,114 @@
 
 namespace wmm_simulator {
 
-template<class T>
+// template<class T>
+// class Interpreter : public Visitor {
+    // static_assert(
+    //     std::is_base_of<StorageSubsystem, T>::value,
+    //     "T must be a class derived from `StorageSubsystem`."
+    // );
+
+//     struct ThreadState;
+
+// public:
+//     Interpreter(
+//         std::shared_ptr<ProgramNode> root,
+//         std::unordered_map<std::string_view, int> labeled_instructions,
+//         bool is_verbose = false
+//     );
+//     std::pair<
+//         std::shared_ptr<StorageSubsystem>,
+//         std::map<int, ThreadSubsystem>
+//     > run();
+    
+//     void visit(const AstNode* node) override;
+//     void visit(const StatementNode* node) override;
+//     void visit(const GotoNode* node) override;
+//     void visit(const ThreadGotoNode* node) override;
+//     void visit(const AssignmentNode* node) override;
+//     void visit(const NumberNode* node) override;
+//     void visit(const BinOpNode* node) override;
+//     void visit(const ConditionNode* node) override;
+//     void visit(const LoadNode* node) override;
+//     void visit(const StoreNode* node) override;
+//     void visit(const CasNode* node) override;
+//     void visit(const FaiNode* node) override;
+//     void visit(const FenceNode* node) override;
+//     void visit(const EndNode* node) override;
+
+// private:
+//     struct ThreadState {
+//         int instruction_index;
+//         ThreadSubsystem thread_subsystem;
+//     };
+    
+//     std::shared_ptr<ProgramNode> m_root;
+
+//     std::unordered_map<std::string_view, int> m_labeled_instructions;
+//     bool m_is_verbose;
+//     std::map<int, ThreadState> m_threads;
+//     std::map<int, ThreadSubsystem> m_finished_thread_states;
+//     std::shared_ptr<StorageSubsystem> m_storage;
+//     int m_max_thread_index = 0;
+//     int m_current_thread = 0;
+//     int m_last_evaluated_value = 0; // for visiting expressions
+//     int m_goto_instruction = -1; // for inner nodes to tell StatementNode that goto command was executed
+
+//     void init();
+//     int pick_random_thread() const;
+//     bool has_active_threads() const;
+//     void interleave_thread();
+//     std::string get_log_prefix();
+//     std::pair<
+//         std::shared_ptr<StorageSubsystem>,
+//         std::map<int, ThreadSubsystem>
+//     > get_state();
+// };
+
+class ProgramState;
+
 class Interpreter : public Visitor {
-    static_assert(
-        std::is_base_of<StorageSubsystem, T>::value,
-        "T must be a class derived from `StorageSubsystem`."
-    );
-
-    struct ThreadState;
-
 public:
+
     Interpreter(
         std::shared_ptr<ProgramNode> root,
-        std::unordered_map<std::string_view, int> labeled_instructions,
-        bool is_verbose = false
+        std::unordered_map<std::string_view, int> labeled_instructions
     );
-    std::pair<
-        std::shared_ptr<StorageSubsystem>,
-        std::map<int, ThreadSubsystem>
-    > run();
+
+    const ProgramNode* get_ast() const;
+
+    template<class T>
+    void run();
     
-    void visit(const AstNode* node) override;
-    void visit(const StatementNode* node) override;
-    void visit(const GotoNode* node) override;
-    void visit(const ThreadGotoNode* node) override;
-    void visit(const AssignmentNode* node) override;
-    void visit(const NumberNode* node) override;
-    void visit(const BinOpNode* node) override;
-    void visit(const ConditionNode* node) override;
-    void visit(const LoadNode* node) override;
-    void visit(const StoreNode* node) override;
-    void visit(const CasNode* node) override;
-    void visit(const FaiNode* node) override;
-    void visit(const FenceNode* node) override;
-    void visit(const EndNode* node) override;
+    void visit(const AstNode* node, ProgramState* state) override;
+    void visit(const StatementNode* node, ProgramState* state) override;
+    void visit(const GotoNode* node, ProgramState* state) override;
+    void visit(const ThreadGotoNode* node, ProgramState* state) override;
+    void visit(const AssignmentNode* node, ProgramState* state) override;
+    void visit(const NumberNode* node, ProgramState* state) override;
+    void visit(const BinOpNode* node, ProgramState* state) override;
+    void visit(const ConditionNode* node, ProgramState* state) override;
+    void visit(const LoadNode* node, ProgramState* state) override;
+    void visit(const StoreNode* node, ProgramState* state) override;
+    void visit(const CasNode* node, ProgramState* state) override;
+    void visit(const FaiNode* node, ProgramState* state) override;
+    void visit(const FenceNode* node, ProgramState* state) override;
+    void visit(const EndNode* node, ProgramState* state) override;
 
 private:
-    struct ThreadState {
-        int instruction_index;
-        ThreadSubsystem thread_subsystem;
-    };
-    
     std::shared_ptr<ProgramNode> m_root;
     std::unordered_map<std::string_view, int> m_labeled_instructions;
-    bool m_is_verbose;
-    std::map<int, ThreadState> m_threads;
-    std::map<int, ThreadSubsystem> m_finished_thread_states;
-    std::shared_ptr<StorageSubsystem> m_storage;
-    int m_max_thread_index = 0;
-    int m_current_thread = 0;
-    int m_last_evaluated_value = 0; // for visiting expressions
-    int m_goto_instruction = -1; // for inner nodes to tell StatementNode that goto command was executed
 
-    void init();
-    int pick_random_thread() const;
-    bool has_active_threads() const;
-    void interleave_thread();
-    std::string get_log_prefix();
-    std::pair<
-        std::shared_ptr<StorageSubsystem>,
-        std::map<int, ThreadSubsystem>
-    > get_state();
+    int get_random_active_thread_id(const ProgramState& state) const;
+    // void init();
+    // int pick_random_thread() const;
+    // bool has_active_threads() const;
+    // void interleave_thread();
+    // std::string get_log_prefix();
+    // std::pair<
+    //     std::shared_ptr<StorageSubsystem>,
+    //     std::map<int, ThreadSubsystem>
+    // > get_state();
 };
 
 }
