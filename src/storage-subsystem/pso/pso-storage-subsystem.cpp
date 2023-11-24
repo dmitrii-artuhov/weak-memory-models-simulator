@@ -63,6 +63,27 @@ void PSOStorageSubsystem::fence(
     }
 }
 
+void PSOStorageSubsystem::finish() {
+    flush_all_buffers();
+}
+
+std::vector <std::unique_ptr<StorageSubsystem>> PSOStorageSubsystem::get_eps_transitions(int thread_id) const {
+    std::vector <std::unique_ptr<StorageSubsystem>> results;
+
+    if (has_eps_transitions(thread_id)) {
+        const auto locations = get_propagate_locations(thread_id);
+        
+        for (auto loc : locations) {
+            PSOStorageSubsystem* new_storage = new PSOStorageSubsystem(*this);
+            new_storage->propagate(thread_id, loc);
+
+            results.push_back(std::unique_ptr<StorageSubsystem> (new_storage));
+        }
+    }
+
+    return results;
+}
+
 StorageSubsystem* PSOStorageSubsystem::make_copy() const {
     return new PSOStorageSubsystem(*this);
 }
@@ -115,12 +136,12 @@ bool PSOStorageSubsystem::has_eps_transitions(int thread_id) const {
     return m_store_buffers.count(thread_id);
 }
 
-const std::vector <std::string_view> PSOStorageSubsystem::get_propagate_locations(int thread_id) {
+const std::vector <std::string_view> PSOStorageSubsystem::get_propagate_locations(int thread_id) const {
     if (!m_store_buffers.count(thread_id)) {
         return {};
     }
 
-    auto& thread_buffer = m_store_buffers[thread_id];
+    auto& thread_buffer = m_store_buffers.at(thread_id);
     std::vector <std::string_view> result(thread_buffer.size());
     size_t i = 0;
     for (auto& [ location_name, q ] : thread_buffer) {

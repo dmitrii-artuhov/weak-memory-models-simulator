@@ -5,6 +5,8 @@
 #include <iostream>
 #include <deque>
 #include <string>
+#include <vector>
+#include <memory>
 #include <algorithm>
 
 namespace wmm_simulator {
@@ -13,9 +15,6 @@ class TSOStorageSubsystem : public StorageSubsystem {
 public:
     TSOStorageSubsystem();
     TSOStorageSubsystem(const TSOStorageSubsystem& other);
-    ~TSOStorageSubsystem() {
-        std::cout << "~TSOStorageSubsystem" << std::endl;
-    }
 
     int read(
         int thread_id,
@@ -32,12 +31,16 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) override;
+    void finish() override;
+
+    std::vector <std::unique_ptr<StorageSubsystem>> get_eps_transitions(int thread_id) const override;
+
     StorageSubsystem* make_copy() const override;
+    bool has_eps_transitions(int thread_id) const override;
     
     std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;
     
-    bool has_eps_transitions(int thread_id) const override;
     void propagate(int thread_id);
     void flush_all_buffers();
 

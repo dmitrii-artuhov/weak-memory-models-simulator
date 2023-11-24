@@ -13,9 +13,6 @@ class PSOStorageSubsystem : public StorageSubsystem {
 public:
     PSOStorageSubsystem();
     PSOStorageSubsystem(const PSOStorageSubsystem& other);
-    ~PSOStorageSubsystem() {
-        std::cout << "~PSOStorageSubsystem" << std::endl;
-    }
 
     int read(
         int thread_id,
@@ -32,13 +29,16 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) override;
+    void finish() override;
+
+    std::vector <std::unique_ptr<StorageSubsystem>> get_eps_transitions(int thread_id) const override;
+
     StorageSubsystem* make_copy() const override;
-    
     std::string get_printable_state() override;
     std::map<std::string, int> get_storage() override;
 
     bool has_eps_transitions(int thread_id) const;
-    const std::vector <std::string_view> get_propagate_locations(int thread_id);
+    const std::vector <std::string_view> get_propagate_locations(int thread_id) const;
     void propagate(int thread_id, std::string_view location_name);
     void flush_all_buffers();
 

@@ -11,10 +11,6 @@ class SCStorageSubsystem : public StorageSubsystem {
 public:
     SCStorageSubsystem();
     SCStorageSubsystem(const SCStorageSubsystem& other);
-    ~SCStorageSubsystem() {
-        // TODO: remove
-        std::cout << "~SCStorageSubsystem" << std::endl;
-    }
 
     int read(
         int thread_id,

@@ -56,7 +56,7 @@ int Interpreter::get_random_active_thread_id(const ProgramState& state) const {
 
 
 /*  Specialization for a SC storage subsystem */
-// TODO: use SFINAE in header file?
+// TODO: use SFINAE in header file instead of static_assert?
 template<class T>
 void Interpreter::run() {
     static_assert(
@@ -89,6 +89,9 @@ void Interpreter::run() {
             state = state.get_transition_state();
         }
     }
+
+    std::cout << "Flush memory" << std::endl;
+    state.storage->finish();
 
     std::cout << "Program finished" << std::endl;
 
@@ -521,6 +524,8 @@ void Interpreter::visit(const EndNode*, ProgramState* state) {
 
 // Explicit template instantiation
 template void Interpreter::run<SCStorageSubsystem>();
+template void Interpreter::run<TSOStorageSubsystem>();
+template void Interpreter::run<PSOStorageSubsystem>();
 // template class Interpreter<SCStorageSubsystem>;
 // template class Interpreter<TSOStorageSubsystem>;
 // template class Interpreter<PSOStorageSubsystem>;

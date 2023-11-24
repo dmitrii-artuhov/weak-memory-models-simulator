@@ -1,6 +1,7 @@
 #include "tso-storage-subsystem.h"
 
 #include <string>
+#include <memory>
 #include <sstream>
 #include <cassert>
 #include <map>
@@ -96,6 +97,23 @@ std::string TSOStorageSubsystem::get_printable_state() {
     }
 
     return ss.str();
+}
+
+void TSOStorageSubsystem::finish() {
+    flush_all_buffers();
+}
+
+std::vector <std::unique_ptr<StorageSubsystem>> TSOStorageSubsystem::get_eps_transitions(int thread_id) const {
+    std::vector <std::unique_ptr<StorageSubsystem>> results;
+
+    if (has_eps_transitions(thread_id)) {
+        TSOStorageSubsystem* new_storage = new TSOStorageSubsystem(*this);
+        new_storage->propagate(thread_id);
+
+        results.push_back(std::unique_ptr<StorageSubsystem> (new_storage));
+    }
+
+    return results;
 }
 
 StorageSubsystem* TSOStorageSubsystem::make_copy() const {

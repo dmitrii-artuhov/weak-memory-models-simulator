@@ -102,8 +102,17 @@ ProgramState ProgramState::get_transition_state() {
 }
 
 std::vector<ProgramState> ProgramState::get_eps_transition_states() {
-    // TODO
-    return {};
+    auto new_storages = storage->get_eps_transitions(current_thread_id);
+    std::vector<ProgramState> results;
+    
+    for (size_t i = 0; i < new_storages.size(); ++i) {
+        ProgramState new_state(*this);
+        new_state.storage = std::move(new_storages[i]);
+        
+        results.push_back(std::move(new_state));
+    }
+
+    return results;
 }
 
 }

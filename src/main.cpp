@@ -60,7 +60,9 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // std::cout << std::endl;
 
         Interpreter interpreter(parse_result.first, parse_result.second);
-        interpreter.run<SCStorageSubsystem>();
+        // interpreter.run<SCStorageSubsystem>();
+        // interpreter.run<TSOStorageSubsystem>();
+        interpreter.run<PSOStorageSubsystem>();
 
         /*---- Print final results of execution -----------------------------------*/
         // std::cout << std::endl << "=========== Memory state ===========" << std::endl;
