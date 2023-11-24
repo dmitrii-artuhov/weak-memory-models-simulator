@@ -9,8 +9,8 @@ void ThreadSubsystem::set(std::string_view register_name, int value) {
     m_store[register_name] = value;
 }
 
-int ThreadSubsystem::get(std::string_view register_name) {
-    return m_store[register_name];    
+int ThreadSubsystem::get(std::string_view register_name) const {
+    return m_store.at(register_name);    
 }
 
 std::string ThreadSubsystem::get_printable_state() const {
@@ -34,6 +34,30 @@ std::map<std::string, int> ThreadSubsystem::get_registers() const {
     }
 
     return result;
+}
+
+
+bool operator==(const ThreadSubsystem& t1, const ThreadSubsystem& t2) {
+    auto cmp = [](const ThreadSubsystem& from, const ThreadSubsystem& to) -> bool {
+        bool equal = true;
+        for (auto it = from.m_store.begin(); it != from.m_store.end() && equal; ++it) {
+            const auto& [ register_name, value ] = *it;
+            if (
+                !to.m_store.count(register_name) ||
+                to.m_store.at(register_name) != value
+            ) {
+                equal = false;
+            }
+        }
+
+        return equal;
+    };
+
+    return cmp(t1, t2) && cmp(t2, t1);
+}
+
+bool operator!=(const ThreadSubsystem& t1, const ThreadSubsystem& t2) {
+    return !(t1 == t2);
 }
 
 }

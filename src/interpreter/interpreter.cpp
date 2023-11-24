@@ -12,8 +12,6 @@
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
 #include "ast/node.h"
-// #include "utils/node-stringifier.h"
-
 
 namespace wmm_simulator {
 
@@ -50,213 +48,6 @@ void Interpreter::print_state(const ProgramState& state) const {
     std::cout << "====================================" << std::endl;
 }
 
-
-/*  Specialization for a SC storage subsystem */
-// TODO: use SFINAE in header file instead of static_assert?
-// template<class T>
-// void Interpreter::run() {
-//     static_assert(
-//         std::is_base_of<StorageSubsystem, T>::value,
-//         "T must be a class derived from `StorageSubsystem`."
-//     );
-
-//     std::cout << "Nothing" << std::endl;
-
-    // pick random thread
-    // int offset = utils::get_random_in_range(0, m_threads.size() - 1);
-    // // std::cout << "offset: " << offset << std::endl;
-    
-    // auto it = m_threads.begin();
-    // std::advance(it, offset);
-    // return it->first;
-
-    // void Interpreter::interleave_thread() {
-    // // pick current thread
-    //     int prev_thread_id = m_current_thread;
-    //     m_current_thread = pick_random_thread();
-
-    //     if (prev_thread_id != m_current_thread && m_is_verbose) {
-    //         std::cout << "Thread interleaving: " << prev_thread_id << " -> " << m_current_thread << std::endl << std::endl;
-    //     }
-    // }
-
-
-    // init();
-
-    // while (has_active_threads()) {
-    //     // TODO: implement skipping of unrelated to storage subsystem operations 
-
-    //     interleave_thread();
-
-    //     // non-eps transitions
-    //     int instruction = m_threads[m_current_thread].instruction_index;
-    //     m_root->get_statements()[instruction]->accept(this);
-
-    //     if (m_is_verbose) {
-    //         std::cout << m_storage->get_printable_state() << std::endl;
-            
-    //         if (m_threads.count(m_current_thread)) {
-    //             std::cout << "Registers:" << std::endl << m_threads[m_current_thread].thread_subsystem.get_printable_state() << std::endl;
-    //         }
-    //     }
-    // }
-
-    // return get_state();
-// }
-
-
-/*  Specialization for a TSO storage subsystem */
-// template<>
-// std::pair<
-//     std::shared_ptr<StorageSubsystem>,
-//     std::map<int, ThreadSubsystem>
-// > Interpreter<TSOStorageSubsystem>::run() {
-//     init();
-
-//     std::shared_ptr<TSOStorageSubsystem> tso_storage = std::static_pointer_cast<TSOStorageSubsystem> (m_storage);
-    
-//     while (has_active_threads()) {
-//         // TODO: implement skipping of unrelated to storage subsystem operations 
-
-//         interleave_thread();
-
-//         if (
-//             tso_storage->has_eps_transitions(m_current_thread) &&
-//             utils::get_random_in_range(0, 1) == 0
-//         ) {
-//             // eps transitions
-//             if (m_is_verbose) {
-//                 std::cout << get_log_prefix() << "perform propagate" << std::endl << std::endl;
-//             }
-//             tso_storage->propagate(m_current_thread);
-//         }
-//         else {
-//             // non-eps transitions
-//             int instruction = m_threads[m_current_thread].instruction_index;
-//             m_root->get_statements()[instruction]->accept(this);
-//         }
-
-//         if (m_is_verbose) {
-//             std::cout << m_storage->get_printable_state() << std::endl;
-            
-//             if (m_threads.count(m_current_thread)) {
-//                 std::cout << "Registers:" << std::endl << m_threads[m_current_thread].thread_subsystem.get_printable_state() << std::endl;
-//             }
-//         }
-//     }
-
-//     tso_storage->flush_all_buffers();
-
-//     return get_state();
-// }
-
-
-// /*  Specialization for a PSO storage subsystem */
-// template<>
-// std::pair<
-//     std::shared_ptr<StorageSubsystem>,
-//     std::map<int, ThreadSubsystem>
-// > Interpreter<PSOStorageSubsystem>::run() {
-//     init();
-
-//     std::shared_ptr<PSOStorageSubsystem> pso_storage = std::static_pointer_cast<PSOStorageSubsystem> (m_storage);
-    
-//     while (has_active_threads()) {
-//         // TODO: implement skipping of unrelated to storage subsystem operations 
-
-//         interleave_thread();
-
-//         if (
-//             pso_storage->has_eps_transitions(m_current_thread) &&
-//             utils::get_random_in_range(0, 1) == 0
-//         ) {
-//             // eps transitions
-//             auto location_names = pso_storage->get_propagate_locations(m_current_thread);
-
-//             if (!location_names.empty()) {
-//                 size_t index = utils::get_random_in_range(0, location_names.size() - 1);
-                
-//                 if (m_is_verbose) {
-//                     std::cout << get_log_prefix() << "perform propagate on location '" << location_names[index] << "'";
-
-//                     std::cout << " (all locations: ["; 
-//                     for (size_t i = 0; i < location_names.size(); ++i) {
-//                         std::cout << "'" << location_names[i] << "'";
-//                         if (i != location_names.size() - 1) std::cout << ", ";
-//                     }
-//                     std::cout << "])" << std::endl;
-//                 }
-                
-//                 pso_storage->propagate(
-//                     m_current_thread,
-//                     location_names[index]
-//                 );
-//             }
-//         }
-//         else {
-//             // non-eps transitions
-//             int instruction = m_threads[m_current_thread].instruction_index;
-//             m_root->get_statements()[instruction]->accept(this);
-//         }
-
-//         if (m_is_verbose) {
-//             std::cout << m_storage->get_printable_state() << std::endl;
-            
-//             if (m_threads.count(m_current_thread)) {
-//                 std::cout << "Registers:" << std::endl << m_threads[m_current_thread].thread_subsystem.get_printable_state() << std::endl;
-//             }
-//         }
-//     }
-
-//     pso_storage->flush_all_buffers();
-
-//     return get_state();
-// }
-
-
-
-// int Interpreter::pick_random_thread() const {
-    // int offset = utils::get_random_in_range(0, m_threads.size() - 1);
-    // // std::cout << "offset: " << offset << std::endl;
-    
-    // auto it = m_threads.begin();
-    // std::advance(it, offset);
-    // return it->first;
-// }
-
-
-// bool Interpreter::has_active_threads() const {
-//     return !m_threads.empty();
-// }
-
-
-// void Interpreter::interleave_thread() {
-//     // pick current thread
-//     int prev_thread_id = m_current_thread;
-//     m_current_thread = pick_random_thread();
-
-//     if (prev_thread_id != m_current_thread && m_is_verbose) {
-//         std::cout << "Thread interleaving: " << prev_thread_id << " -> " << m_current_thread << std::endl << std::endl;
-//     }
-// }
-
-
-// std::string Interpreter::get_log_prefix() {
-//     return "t " + std::to_string(m_current_thread) + "> ";
-// }
-
-
-// std::pair<
-//     std::shared_ptr<StorageSubsystem>,
-//     std::map<int, ThreadSubsystem>
-// > Interpreter::get_state() {
-//     return {
-//         m_storage,
-//         m_finished_thread_states
-//     };
-// }
-
-
 void Interpreter::visit(const AstNode*, ProgramState*) {
     // std::cout << "Unknown node interpreted" << std::endl;
 }
@@ -264,10 +55,6 @@ void Interpreter::visit(const AstNode*, ProgramState*) {
 
 void Interpreter::visit(const StatementNode* node, ProgramState* state) {
     // std::cout << "Interpret StatementNode" << std::endl;
-
-    // if (m_is_verbose) {
-        // std::cout << get_log_prefix() << utils::NodeStringifier().stringify(node) << std::endl << std::endl;
-    // }
     
     node->get_statement()->accept(this, state); // inner nodes will set `state->goto_instruction` instruction index if required
     state->update_current_thread_instruction();
@@ -304,10 +91,6 @@ void Interpreter::visit(const AssignmentNode* node, ProgramState* state) {
     node->get_expression()->accept(this, state); // evaluate expression to state.last_evaluated_value
     
     state->update_current_thread_register(node->get_register_name());
-    // state->threads[state->current_thread_id].thread_subsystem.set(
-    //     node->get_register_name(),
-    //     state->last_evaluated_value
-    // );
 }
 
 
@@ -403,7 +186,6 @@ void Interpreter::visit(const FenceNode* node, ProgramState* state) {
     );
 }
 
-
 void Interpreter::visit(const CasNode* node, ProgramState* state) {
     // std::cout << "Interpret CasNode" << std::endl;
 
@@ -463,26 +245,10 @@ void Interpreter::visit(const FaiNode* node, ProgramState* state) {
 void Interpreter::visit(const EndNode*, ProgramState* state) {
     // std::cout << "Interpret EndNode" << std::endl;
     
-    int current_thread_id = state->current_thread_id;
-
-    // auto registers = state->threads[current_thread_id].thread_subsystem.get_registers();
-    // std::cout << "Thread ID: " << current_thread_id << std::endl;
-    // for (auto& [ register_name, val ] : registers) {
-    //     std::cout << register_name << ": " << val << std::endl;
-    // }
-    // std::cout << std::endl;
-    
+    int current_thread_id = state->current_thread_id;    
     state->finished_thread_states[current_thread_id] = state->threads[current_thread_id].thread_subsystem;
 
     state->threads.erase(current_thread_id);
 }
-
-// Explicit template instantiation
-// template void Interpreter::run<SCStorageSubsystem>();
-// template void Interpreter::run<TSOStorageSubsystem>();
-// template void Interpreter::run<PSOStorageSubsystem>();
-// template class Interpreter<SCStorageSubsystem>;
-// template class Interpreter<TSOStorageSubsystem>;
-// template class Interpreter<PSOStorageSubsystem>;
 
 }

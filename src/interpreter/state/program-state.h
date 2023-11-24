@@ -29,7 +29,8 @@ struct ProgramState {
 
     bool has_active_threads() const;
     bool is_interleaving_possible() const;
-    bool has_eps_transitions(int thread_id);
+    bool has_eps_transitions();
+    std::vector <int> get_active_threads_ids() const;
 
     ProgramState get_interleaving_state(int new_active_thread_id);
     ProgramState get_transition_state();

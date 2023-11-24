@@ -31,29 +31,22 @@ void NonDeterministicInterpreter::run() {
         if (state.is_interleaving_possible()) {
             int new_thread_id = get_random_active_thread_id(state);
             if (new_thread_id != state.current_thread_id) {
-                // std::cout << "Interleave thread: " << state.current_thread_id << " -> " << new_thread_id << std::endl;
                 state = state.get_interleaving_state(new_thread_id);
             }
         }
 
-        if (state.has_eps_transitions(state.current_thread_id) && utils::get_random_in_range(0, 1) == 0) {
+        if (state.has_eps_transitions() && utils::get_random_in_range(0, 1) == 0) {
             // eps-transitions
-            // std::cout << "Perform eps-transition on thread: " << state.current_thread_id << std::endl;
             auto eps_transition_states = state.get_eps_transition_states();
             state = eps_transition_states[utils::get_random_in_range(0, eps_transition_states.size() - 1)];
         }
         else {
             // regular transition
-            // std::cout << "Perform regular transition on thread: " << state.current_thread_id << std::endl;
             state = state.get_transition_state();
         }
     }
 
-    // std::cout << "Flush memory" << std::endl;
     state.storage->finish();
-
-    // std::cout << "Program finished" << std::endl;
-
     print_state(state);
 }
 

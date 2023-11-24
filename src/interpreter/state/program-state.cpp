@@ -31,6 +31,7 @@ ProgramState& ProgramState::operator=(const ProgramState& other) {
     storage = std::unique_ptr<StorageSubsystem> (other.storage->make_copy());
     threads = other.threads;
     finished_thread_states = other.finished_thread_states;
+    m_interpreter = other.m_interpreter;
 
     return *this;
 }
@@ -68,12 +69,22 @@ bool ProgramState::has_active_threads() const {
 
 bool ProgramState::is_interleaving_possible() const {
     return
-        (is_allowed_interleaving && threads.size() > 1) ||
-        !threads.count(current_thread_id);
+        is_allowed_interleaving &&
+        (threads.size() > 1 || !threads.count(current_thread_id));
 }
 
-bool ProgramState::has_eps_transitions(int thread_id) {
-    return storage->has_eps_transitions(thread_id);
+bool ProgramState::has_eps_transitions() {
+    return storage->has_eps_transitions(current_thread_id);
+}
+
+std::vector <int> ProgramState::get_active_threads_ids() const {
+    std::vector <int> active_threads_ids;
+    
+    for (const auto& [ thread_id, thread_state ] : threads) {
+        active_threads_ids.push_back(thread_id);
+    }
+
+    return active_threads_ids;
 }
 
 ProgramState ProgramState::get_interleaving_state(int new_active_thread_id) {    
@@ -93,7 +104,7 @@ ProgramState ProgramState::get_interleaving_state(int new_active_thread_id) {
 ProgramState ProgramState::get_transition_state() {
     auto new_state = ProgramState(*this);
     
-    int instruction = threads[current_thread_id].instruction_index;
+    int instruction = threads.at(current_thread_id).instruction_index;
     m_interpreter->get_ast()->get_statements()[instruction]->accept(
         m_interpreter, &new_state
     );

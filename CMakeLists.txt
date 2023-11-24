@@ -26,8 +26,11 @@ set(SIMULATOR_SRCS
     src/utils/utils.cpp
     src/utils/utils.h
 
-    src/utils/node-stringifier.cpp
-    src/utils/node-stringifier.h
+    src/utils/node-stringifier/node-stringifier.cpp
+    src/utils/node-stringifier/node-stringifier.h
+    
+    src/utils/node-evaluator/node-evaluator.cpp
+    src/utils/node-evaluator/node-evaluator.h
 
     src/parser/parser.cpp
     src/parser/parser.h
@@ -51,6 +54,9 @@ set(SIMULATOR_SRCS
     
     src/interpreter/tracing/tracing.cpp
     src/interpreter/tracing/tracing.h
+    
+    src/interpreter/model-checking/model-checking.cpp
+    src/interpreter/model-checking/model-checking.h
 
     src/interpreter/state/program-state.cpp
     src/interpreter/state/program-state.h

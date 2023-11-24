@@ -5,7 +5,7 @@
 #include "interpreter/interpreter.h"
 #include "interpreter/state/program-state.h"
 #include "ast/program/program.h"
-#include "utils/node-stringifier.h"
+#include "utils/node-stringifier/node-stringifier.h"
 
 namespace wmm_simulator {
 

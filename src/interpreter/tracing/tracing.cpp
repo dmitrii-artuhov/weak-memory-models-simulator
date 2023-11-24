@@ -36,7 +36,7 @@ void TracingInterpreter::run() {
             }
         }
 
-        if (state.has_eps_transitions(state.current_thread_id) && utils::get_random_in_range(0, 1) == 0) {
+        if (state.has_eps_transitions() && utils::get_random_in_range(0, 1) == 0) {
             // eps-transitions
             std::cout << get_log_prefix(state.current_thread_id) << "perform eps-transition" << std::endl;
             auto eps_transition_states = state.get_eps_transition_states();
@@ -65,7 +65,6 @@ void TracingInterpreter::run() {
 }
 
 void TracingInterpreter::visit(const StatementNode* node, ProgramState* state) {
-    // std::cout << get_log_prefix(state->current_thread_id) << utils::NodeStringifier().stringify(node) << std::endl << std::endl;
     std::cout << get_log_prefix(state->current_thread_id) << m_stringifier.stringify(node) << std::endl << std::endl;
 
     Interpreter::visit(node, state);
