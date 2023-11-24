@@ -26,8 +26,8 @@ set(SIMULATOR_SRCS
     src/utils/utils.cpp
     src/utils/utils.h
 
-    # src/utils/node-stringifier.cpp
-    # src/utils/node-stringifier.h
+    src/utils/node-stringifier.cpp
+    src/utils/node-stringifier.h
 
     src/parser/parser.cpp
     src/parser/parser.h
@@ -46,11 +46,17 @@ set(SIMULATOR_SRCS
     src/interpreter/interpreter.cpp
     src/interpreter/interpreter.h
 
+    src/interpreter/non-deterministic/non-deterministic.cpp
+    src/interpreter/non-deterministic/non-deterministic.h
+    
+    src/interpreter/tracing/tracing.cpp
+    src/interpreter/tracing/tracing.h
+
+    src/interpreter/state/program-state.cpp
+    src/interpreter/state/program-state.h
+
     src/thread-subsystem/thread-subsystem.cpp
     src/thread-subsystem/thread-subsystem.h
-
-    src/interpreter/program-state.cpp
-    src/interpreter/program-state.h
     
     # storage subsystems
     src/storage-subsystem/storage-subsystem.h

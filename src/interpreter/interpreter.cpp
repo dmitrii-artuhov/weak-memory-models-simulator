@@ -3,7 +3,7 @@
 #include <memory>
 #include <iterator>
 
-#include "program-state.h"
+#include "state/program-state.h"
 #include "utils/utils.h"
 #include "exceptions/exceptions.h"
 #include "thread-subsystem/thread-subsystem.h"
@@ -27,74 +27,16 @@ const ProgramNode* Interpreter::get_ast() const {
     return m_root.get();
 }
 
-// void Interpreter::init() {
-//     m_max_thread_index = 0;
-//     m_current_thread = 0;
-//     m_last_evaluated_value = 0;
-//     m_goto_instruction = -1;
-    
-//     m_threads.clear();
-//     m_finished_thread_states.clear();
-    
-//     m_storage = std::shared_ptr<StorageSubsystem>(new T());
-//     // Spawn main thread
-//     m_threads[0] = {
-//         0, // since END instuction is always in the ast
-//         ThreadSubsystem()
-//     };
-// }
-
 int Interpreter::get_random_active_thread_id(const ProgramState& state) const {    
     int offset = utils::get_random_in_range(0, state.threads.size() - 1);
 
     auto it = state.threads.begin();
     std::advance(it, offset);
     
-    std::cout << "random thread id: " << it->first << std::endl;
     return it->first;
 }
 
-
-/*  Specialization for a SC storage subsystem */
-// TODO: use SFINAE in header file instead of static_assert?
-template<class T>
-void Interpreter::run() {
-    static_assert(
-        std::is_base_of<StorageSubsystem, T>::value,
-        "T must be a class derived from `StorageSubsystem`."
-    );
-
-    ProgramState state(std::move(std::make_unique<T>()), this);
-    state.add_thread(0);
-
-    while (state.has_active_threads()) {
-        // interleave thread
-        if (state.is_interleaving_possible()) {
-            int new_thread_id = get_random_active_thread_id(state);
-            if (new_thread_id != state.current_thread_id) {
-                std::cout << "Interleave thread: " << state.current_thread_id << " -> " << new_thread_id << std::endl;
-                state = state.get_interleaving_state(new_thread_id);
-            }
-        }
-
-        if (state.has_eps_transitions(state.current_thread_id) && utils::get_random_in_range(0, 1) == 0) {
-            // eps-transitions
-            std::cout << "Perform eps-transition on thread: " << state.current_thread_id << std::endl;
-            auto eps_transition_states = state.get_eps_transition_states();
-            state = eps_transition_states[utils::get_random_in_range(0, eps_transition_states.size() - 1)];
-        }
-        else {
-            // regular transition
-            std::cout << "Perform regular transition on thread: " << state.current_thread_id << std::endl;
-            state = state.get_transition_state();
-        }
-    }
-
-    std::cout << "Flush memory" << std::endl;
-    state.storage->finish();
-
-    std::cout << "Program finished" << std::endl;
-
+void Interpreter::print_state(const ProgramState& state) const {
     /*---- Print final results of execution -----------------------------------*/
     std::cout << std::endl << "=========== Memory state ===========" << std::endl;
     std::cout << state.storage->get_printable_state() << std::endl;
@@ -106,6 +48,19 @@ void Interpreter::run() {
         std::cout << thread_subsystem.get_printable_state();
     }
     std::cout << "====================================" << std::endl;
+}
+
+
+/*  Specialization for a SC storage subsystem */
+// TODO: use SFINAE in header file instead of static_assert?
+// template<class T>
+// void Interpreter::run() {
+//     static_assert(
+//         std::is_base_of<StorageSubsystem, T>::value,
+//         "T must be a class derived from `StorageSubsystem`."
+//     );
+
+//     std::cout << "Nothing" << std::endl;
 
     // pick random thread
     // int offset = utils::get_random_in_range(0, m_threads.size() - 1);
@@ -147,7 +102,7 @@ void Interpreter::run() {
     // }
 
     // return get_state();
-}
+// }
 
 
 /*  Specialization for a TSO storage subsystem */
@@ -303,15 +258,15 @@ void Interpreter::run() {
 
 
 void Interpreter::visit(const AstNode*, ProgramState*) {
-    std::cout << "Unknown node interpreted" << std::endl;
+    // std::cout << "Unknown node interpreted" << std::endl;
 }
 
 
 void Interpreter::visit(const StatementNode* node, ProgramState* state) {
-    std::cout << "Interpret StatementNode" << std::endl;
+    // std::cout << "Interpret StatementNode" << std::endl;
 
     // if (m_is_verbose) {
-    //     std::cout << get_log_prefix() << utils::NodeStringifier().stringify(node) << std::endl << std::endl;
+        // std::cout << get_log_prefix() << utils::NodeStringifier().stringify(node) << std::endl << std::endl;
     // }
     
     node->get_statement()->accept(this, state); // inner nodes will set `state->goto_instruction` instruction index if required
@@ -320,7 +275,7 @@ void Interpreter::visit(const StatementNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const GotoNode* node, ProgramState* state) {
-    std::cout << "Interpret GotoNode" << std::endl;
+    // std::cout << "Interpret GotoNode" << std::endl;
     const auto goto_label = node->get_goto_label();
 
     if (!m_labeled_instructions.count(goto_label)) {
@@ -332,7 +287,7 @@ void Interpreter::visit(const GotoNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const ThreadGotoNode* node, ProgramState* state) {
-    std::cout << "Interpret ThreadGotoNode" << std::endl;
+    // std::cout << "Interpret ThreadGotoNode" << std::endl;
     const auto thread_start_label = node->get_thread_start_label();
     
     if (!m_labeled_instructions.count(thread_start_label)) {
@@ -345,7 +300,7 @@ void Interpreter::visit(const ThreadGotoNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const AssignmentNode* node, ProgramState* state) {
-    std::cout << "Interpret AssignmentNode" << std::endl;
+    // std::cout << "Interpret AssignmentNode" << std::endl;
     node->get_expression()->accept(this, state); // evaluate expression to state.last_evaluated_value
     
     state->update_current_thread_register(node->get_register_name());
@@ -357,13 +312,13 @@ void Interpreter::visit(const AssignmentNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const NumberNode* node, ProgramState* state) {
-    std::cout << "Interpret NumberNode" << std::endl;
+    // std::cout << "Interpret NumberNode" << std::endl;
     state->last_evaluated_value = node->get_value();
 }
 
 
 void Interpreter::visit(const BinOpNode* node, ProgramState* state) {
-    std::cout << "Interpret BinOpNode" << std::endl;
+    // std::cout << "Interpret BinOpNode" << std::endl;
     auto& thread_subsystem = state->threads[state->current_thread_id].thread_subsystem;
     
     int left = thread_subsystem.get(node->get_left_register());
@@ -392,7 +347,7 @@ void Interpreter::visit(const BinOpNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const ConditionNode* node, ProgramState* state) {
-    std::cout << "Interpret ConditionNode" << std::endl;
+    // std::cout << "Interpret ConditionNode" << std::endl;
     
     auto& thread_subsystem = state->threads[state->current_thread_id].thread_subsystem;
 
@@ -409,7 +364,7 @@ void Interpreter::visit(const ConditionNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const LoadNode* node, ProgramState* state) {
-    std::cout << "Interpret LoadNode" << std::endl;
+    // std::cout << "Interpret LoadNode" << std::endl;
 
     int value = state->storage->read(
         state->current_thread_id,
@@ -425,7 +380,7 @@ void Interpreter::visit(const LoadNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const StoreNode* node, ProgramState* state) {
-    std::cout << "Interpret StoreNode" << std::endl;
+    // std::cout << "Interpret StoreNode" << std::endl;
     int value = state->threads[state->current_thread_id].thread_subsystem.get(
         node->get_register_name()
     );
@@ -440,7 +395,7 @@ void Interpreter::visit(const StoreNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const FenceNode* node, ProgramState* state) {
-    std::cout << "Interpret FenceNode" << std::endl;
+    // std::cout << "Interpret FenceNode" << std::endl;
 
     state->storage->fence(
         state->current_thread_id,
@@ -450,7 +405,7 @@ void Interpreter::visit(const FenceNode* node, ProgramState* state) {
 
 
 void Interpreter::visit(const CasNode* node, ProgramState* state) {
-    std::cout << "Interpret CasNode" << std::endl;
+    // std::cout << "Interpret CasNode" << std::endl;
 
     auto location_name = node->get_location_name();
     auto memory_order = node->get_memory_order();
@@ -480,7 +435,7 @@ void Interpreter::visit(const CasNode* node, ProgramState* state) {
 }
 
 void Interpreter::visit(const FaiNode* node, ProgramState* state) {
-    std::cout << "Interpret FaiNode" << std::endl;
+    // std::cout << "Interpret FaiNode" << std::endl;
     
     auto register_name = node->get_register_name();
     auto location_name = node->get_location_name();
@@ -506,16 +461,16 @@ void Interpreter::visit(const FaiNode* node, ProgramState* state) {
 }
 
 void Interpreter::visit(const EndNode*, ProgramState* state) {
-    std::cout << "Interpret EndNode" << std::endl;
+    // std::cout << "Interpret EndNode" << std::endl;
     
     int current_thread_id = state->current_thread_id;
 
-    auto registers = state->threads[current_thread_id].thread_subsystem.get_registers();
-    std::cout << "Thread ID: " << current_thread_id << std::endl;
-    for (auto& [ register_name, val ] : registers) {
-        std::cout << register_name << ": " << val << std::endl;
-    }
-    std::cout << std::endl;
+    // auto registers = state->threads[current_thread_id].thread_subsystem.get_registers();
+    // std::cout << "Thread ID: " << current_thread_id << std::endl;
+    // for (auto& [ register_name, val ] : registers) {
+    //     std::cout << register_name << ": " << val << std::endl;
+    // }
+    // std::cout << std::endl;
     
     state->finished_thread_states[current_thread_id] = state->threads[current_thread_id].thread_subsystem;
 
@@ -523,9 +478,9 @@ void Interpreter::visit(const EndNode*, ProgramState* state) {
 }
 
 // Explicit template instantiation
-template void Interpreter::run<SCStorageSubsystem>();
-template void Interpreter::run<TSOStorageSubsystem>();
-template void Interpreter::run<PSOStorageSubsystem>();
+// template void Interpreter::run<SCStorageSubsystem>();
+// template void Interpreter::run<TSOStorageSubsystem>();
+// template void Interpreter::run<PSOStorageSubsystem>();
 // template class Interpreter<SCStorageSubsystem>;
 // template class Interpreter<TSOStorageSubsystem>;
 // template class Interpreter<PSOStorageSubsystem>;

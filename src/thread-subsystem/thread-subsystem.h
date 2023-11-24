@@ -13,7 +13,7 @@ private:
 public:
     void set(std::string_view register_name, int value);
     int get(std::string_view register_name);
-    std::string get_printable_state();
+    std::string get_printable_state() const;
     std::map<std::string, int> get_registers() const;
 };
 

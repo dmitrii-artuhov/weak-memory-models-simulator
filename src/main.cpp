@@ -9,6 +9,8 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "interpreter/interpreter.h"
+#include "interpreter/non-deterministic/non-deterministic.h"
+#include "interpreter/tracing/tracing.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
@@ -59,7 +61,9 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
         // }
         // std::cout << std::endl;
 
-        Interpreter interpreter(parse_result.first, parse_result.second);
+        // NonDeterministicInterpreter interpreter(parse_result.first, parse_result.second);
+        TracingInterpreter interpreter(parse_result.first, parse_result.second);
+        // Interpreter interpreter(parse_result.first, parse_result.second);
         // interpreter.run<SCStorageSubsystem>();
         // interpreter.run<TSOStorageSubsystem>();
         interpreter.run<PSOStorageSubsystem>();

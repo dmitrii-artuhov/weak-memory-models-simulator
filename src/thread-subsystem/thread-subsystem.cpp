@@ -13,12 +13,12 @@ int ThreadSubsystem::get(std::string_view register_name) {
     return m_store[register_name];    
 }
 
-std::string ThreadSubsystem::get_printable_state() {
+std::string ThreadSubsystem::get_printable_state() const {
     std::stringstream ss;
     
     if (m_store.empty()) ss << "[empty]" << std::endl;
 
-    for (auto& [ loc, val ] : m_store) {
+    for (const auto& [ loc, val ] : m_store) {
         ss << loc << ": " << val << std::endl;
     }
     ss << std::endl;

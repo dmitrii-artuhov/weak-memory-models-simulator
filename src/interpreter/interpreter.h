@@ -94,6 +94,8 @@ class ProgramState;
 
 class Interpreter : public Visitor {
 public:
+    template<class T>
+    void run();
 
     Interpreter(
         std::shared_ptr<ProgramNode> root,
@@ -101,9 +103,6 @@ public:
     );
 
     const ProgramNode* get_ast() const;
-
-    template<class T>
-    void run();
     
     void visit(const AstNode* node, ProgramState* state) override;
     void visit(const StatementNode* node, ProgramState* state) override;
@@ -120,11 +119,11 @@ public:
     void visit(const FenceNode* node, ProgramState* state) override;
     void visit(const EndNode* node, ProgramState* state) override;
 
-private:
     std::shared_ptr<ProgramNode> m_root;
     std::unordered_map<std::string_view, int> m_labeled_instructions;
 
     int get_random_active_thread_id(const ProgramState& state) const;
+    void print_state(const ProgramState& state) const;
     // void init();
     // int pick_random_thread() const;
     // bool has_active_threads() const;
