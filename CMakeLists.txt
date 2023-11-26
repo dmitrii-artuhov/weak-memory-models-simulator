@@ -21,6 +21,8 @@ set(SIMULATOR_SRCS
     src/file-reader/file-reader.cpp
     src/file-reader/file-reader.h
 
+    src/args-parser/args-parser.h
+
     src/exceptions/exceptions.h
     
     src/utils/utils.cpp
