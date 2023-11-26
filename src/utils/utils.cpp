@@ -1,5 +1,8 @@
 #include "utils.h"
 
+#include <cctype>
+#include <string>
+
 namespace wmm_simulator::utils {
 
 bool is_space(char c) {
@@ -115,6 +118,25 @@ int get_random_in_range(int left, int right) {
     std::uniform_int_distribution<> dist{left, right};
     
     return dist(gen);
+}
+
+// removes whites spaces from start and end of `str`, but preservers newline character
+std::string trim(std::string_view str) {
+    size_t start = 0;
+    size_t end = str.length();
+
+    // Find the first non-whitespace character from the beginning
+    while (start < end && str[start] != '\n' && std::isspace(str[start])) {
+        start++;
+    }
+
+    // Find the first non-whitespace character from the end
+    while (end > start && str[end - 1] != '\n' && std::isspace(str[end - 1])) {
+        end--;
+    }
+
+    // Extract the substring without leading and trailing whitespaces
+    return std::string(str.substr(start, end - start));
 }
 
 }

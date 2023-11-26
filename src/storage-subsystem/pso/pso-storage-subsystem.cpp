@@ -16,7 +16,7 @@ PSOStorageSubsystem::PSOStorageSubsystem(const PSOStorageSubsystem& other) {
 
 int PSOStorageSubsystem::read(
     int thread_id,
-    std::string_view location_name,
+    const std::string& location_name,
     MemoryOrder
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
@@ -41,7 +41,7 @@ int PSOStorageSubsystem::read(
 
 void PSOStorageSubsystem::write(
     int thread_id,
-    std::string_view location_name,
+    const std::string& location_name,
     int value,
     MemoryOrder memory_order
 ) {
@@ -75,7 +75,7 @@ std::vector <std::unique_ptr<StorageSubsystem>> PSOStorageSubsystem::get_eps_tra
         
         for (auto loc : locations) {
             PSOStorageSubsystem* new_storage = new PSOStorageSubsystem(*this);
-            new_storage->propagate(thread_id, loc);
+            new_storage->propagate(thread_id, loc.data());
 
             results.push_back(std::unique_ptr<StorageSubsystem> (new_storage));
         }
@@ -151,7 +151,7 @@ const std::vector <std::string_view> PSOStorageSubsystem::get_propagate_location
     return result;
 }
 
-void PSOStorageSubsystem::propagate(int thread_id, std::string_view location_name) {
+void PSOStorageSubsystem::propagate(int thread_id, const std::string& location_name) {
     if (!m_store_buffers.count(thread_id)) {
         return;
     }

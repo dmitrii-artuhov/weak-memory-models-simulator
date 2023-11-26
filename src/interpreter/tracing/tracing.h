@@ -3,7 +3,7 @@
 #include <string>
 
 #include "interpreter/interpreter.h"
-#include "interpreter/state/program-state.h"
+#include "state/program-state.h"
 #include "ast/program/program.h"
 #include "utils/node-stringifier/node-stringifier.h"
 
@@ -18,7 +18,7 @@ public:
 
     void visit(const StatementNode* node, ProgramState* state) override;
 
-private:
+protected:
     std::string get_log_prefix(int thread_id) const;
     utils::NodeStringifier m_stringifier;
 };

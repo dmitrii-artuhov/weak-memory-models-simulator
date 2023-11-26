@@ -14,7 +14,7 @@ SCStorageSubsystem::SCStorageSubsystem(const SCStorageSubsystem& other) {
 
 int SCStorageSubsystem::read(
     int,
-    std::string_view location_name,
+    const std::string& location_name,
     MemoryOrder
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
@@ -26,7 +26,7 @@ int SCStorageSubsystem::read(
 
 void SCStorageSubsystem::write(
     int,
-    std::string_view location_name,
+    const std::string& location_name,
     int value,
     MemoryOrder
 ) {

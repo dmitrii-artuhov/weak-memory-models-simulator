@@ -87,7 +87,7 @@ std::vector <int> ProgramState::get_active_threads_ids() const {
     return active_threads_ids;
 }
 
-ProgramState ProgramState::get_interleaving_state(int new_active_thread_id) {    
+ProgramState ProgramState::get_interleaving_state(int new_active_thread_id) const {    
     if (
         current_thread_id == new_active_thread_id ||
         !threads.count(new_active_thread_id)
@@ -101,7 +101,7 @@ ProgramState ProgramState::get_interleaving_state(int new_active_thread_id) {
     return new_state;
 }
 
-ProgramState ProgramState::get_transition_state() {
+ProgramState ProgramState::get_transition_state() const {
     auto new_state = ProgramState(*this);
     
     int instruction = threads.at(current_thread_id).instruction_index;
@@ -112,7 +112,7 @@ ProgramState ProgramState::get_transition_state() {
     return new_state;
 }
 
-std::vector<ProgramState> ProgramState::get_eps_transition_states() {
+std::vector<ProgramState> ProgramState::get_eps_transition_states() const {
     auto new_storages = storage->get_eps_transitions(current_thread_id);
     std::vector<ProgramState> results;
     

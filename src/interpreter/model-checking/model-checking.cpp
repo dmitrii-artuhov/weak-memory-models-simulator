@@ -6,7 +6,7 @@
 #include <queue>
 #include <functional>
 
-#include "interpreter/state/program-state.h"
+#include "state/program-state.h"
 #include "storage-subsystem/storage-subsystem.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"

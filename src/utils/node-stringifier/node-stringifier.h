@@ -5,7 +5,7 @@
 
 #include "visitor/visitor.h"
 #include "lang/keywords.h"
-#include "interpreter/state/program-state.h"
+#include "state/program-state.h"
 
 #include "ast/node.h"
 #include "ast/program/program.h"

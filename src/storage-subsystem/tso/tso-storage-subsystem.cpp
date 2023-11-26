@@ -17,7 +17,7 @@ TSOStorageSubsystem::TSOStorageSubsystem(const TSOStorageSubsystem& other) {
 
 int TSOStorageSubsystem::read(
     int thread_id,
-    std::string_view location_name,
+    const std::string& location_name,
     MemoryOrder
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
@@ -47,7 +47,7 @@ int TSOStorageSubsystem::read(
 
 void TSOStorageSubsystem::write(
     int thread_id,
-    std::string_view location_name,
+    const std::string& location_name,
     int value,
     MemoryOrder memory_order
 ) {

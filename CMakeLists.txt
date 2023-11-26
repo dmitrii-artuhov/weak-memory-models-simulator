@@ -55,11 +55,16 @@ set(SIMULATOR_SRCS
     src/interpreter/tracing/tracing.cpp
     src/interpreter/tracing/tracing.h
     
+    src/interpreter/interactive/interactive.cpp
+    src/interpreter/interactive/interactive.h
+    src/interpreter/interactive/interactive-cli.cpp
+    src/interpreter/interactive/interactive-cli.h
+    
     src/interpreter/model-checking/model-checking.cpp
     src/interpreter/model-checking/model-checking.h
 
-    src/interpreter/state/program-state.cpp
-    src/interpreter/state/program-state.h
+    src/state/program-state.cpp
+    src/state/program-state.h
 
     src/thread-subsystem/thread-subsystem.cpp
     src/thread-subsystem/thread-subsystem.h

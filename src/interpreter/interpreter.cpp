@@ -151,7 +151,7 @@ void Interpreter::visit(const LoadNode* node, ProgramState* state) {
 
     int value = state->storage->read(
         state->current_thread_id,
-        node->get_location_name(),
+        node->get_location_name().data(),
         node->get_memory_order()
     );
 
@@ -170,7 +170,7 @@ void Interpreter::visit(const StoreNode* node, ProgramState* state) {
 
     state->storage->write(
         state->current_thread_id,
-        node->get_location_name(),
+        node->get_location_name().data(),
         value,
         node->get_memory_order()
     );
@@ -189,7 +189,7 @@ void Interpreter::visit(const FenceNode* node, ProgramState* state) {
 void Interpreter::visit(const CasNode* node, ProgramState* state) {
     // std::cout << "Interpret CasNode" << std::endl;
 
-    auto location_name = node->get_location_name();
+    auto location_name = node->get_location_name().data();
     auto memory_order = node->get_memory_order();
     int current_thread_id = state->current_thread_id;
 
@@ -220,7 +220,7 @@ void Interpreter::visit(const FaiNode* node, ProgramState* state) {
     // std::cout << "Interpret FaiNode" << std::endl;
     
     auto register_name = node->get_register_name();
-    auto location_name = node->get_location_name();
+    auto location_name = node->get_location_name().data();
     auto memory_order = node->get_memory_order();
     int current_thread_id = state->current_thread_id;
 

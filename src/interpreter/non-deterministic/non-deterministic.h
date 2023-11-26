@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interpreter/interpreter.h"
-#include "interpreter/state/program-state.h"
+#include "state/program-state.h"
 
 namespace wmm_simulator {
 

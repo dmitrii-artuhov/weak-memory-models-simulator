@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-#include "interpreter/state/program-state.h"
+#include "state/program-state.h"
 #include "utils/utils.h"
 #include "exceptions/exceptions.h"
 #include "thread-subsystem/thread-subsystem.h"

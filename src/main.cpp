@@ -11,6 +11,8 @@
 #include "interpreter/interpreter.h"
 #include "interpreter/non-deterministic/non-deterministic.h"
 #include "interpreter/tracing/tracing.h"
+#include "interpreter/interactive/interactive.h"
+#include "interpreter/interactive/interactive-cli.h"
 #include "interpreter/model-checking/model-checking.h"
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
@@ -26,8 +28,8 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
     
         // std::string program_path = argv[1];
         // std::string program_path = "../tests/test-data/single-thread.txt";
-        // std::string program_path = "../tests/test-data/message-passing.txt";
-        std::string program_path = "../tests/test-data/store-buffering.txt";
+        std::string program_path = "../tests/test-data/message-passing.txt";
+        // std::string program_path = "../tests/test-data/store-buffering.txt";
         std::string code = fs::FileReader::read_file(program_path);
 
         std::cout << "Program text: \n" << code << std::endl;
@@ -43,7 +45,8 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] char* argv[]) {
 
         // NonDeterministicInterpreter interpreter(parse_result.first, parse_result.second);
         // TracingInterpreter interpreter(parse_result.first, parse_result.second);
-        ModelCheckingInterpreter interpreter(parse_result.first, parse_result.second);
+        // ModelCheckingInterpreter interpreter(parse_result.first, parse_result.second);
+        InteractiveInterpreter interpreter(parse_result.first, parse_result.second);
         
         interpreter.run<SCStorageSubsystem>();
         // interpreter.run<TSOStorageSubsystem>();
