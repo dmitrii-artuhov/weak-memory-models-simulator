@@ -45,5 +45,8 @@ namespace wmm_simulator::exceptions {
     struct unknown_label : std::runtime_error {
         explicit unknown_label(const std::string& label_name) : std::runtime_error("Unknown label: '" + label_name + "'") {}
     };
-    
+
+    struct invalid_thread_interleaving : std::runtime_error {
+        explicit invalid_thread_interleaving(int prev_thread_id, int next_thread_id) : std::runtime_error("Invalid thread interleaving: from thread " + std::to_string(prev_thread_id) + " to thread " + std::to_string(next_thread_id)) {}
+    };    
 }

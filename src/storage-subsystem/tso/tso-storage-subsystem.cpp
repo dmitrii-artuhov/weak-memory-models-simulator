@@ -1,15 +1,23 @@
 #include "tso-storage-subsystem.h"
 
 #include <string>
+#include <memory>
 #include <sstream>
 #include <cassert>
 #include <map>
 
 namespace wmm_simulator {
 
+TSOStorageSubsystem::TSOStorageSubsystem() {}
+
+TSOStorageSubsystem::TSOStorageSubsystem(const TSOStorageSubsystem& other) {
+    m_memory = other.m_memory;
+    m_store_buffers = other.m_store_buffers;
+}
+
 int TSOStorageSubsystem::read(
     int thread_id,
-    std::string_view location_name,
+    const std::string& location_name,
     MemoryOrder
 ) {
     // only supports MemoryOrder::SEQUENTIALLY_CONSISTENT
@@ -39,7 +47,7 @@ int TSOStorageSubsystem::read(
 
 void TSOStorageSubsystem::write(
     int thread_id,
-    std::string_view location_name,
+    const std::string& location_name,
     int value,
     MemoryOrder memory_order
 ) {
@@ -91,17 +99,26 @@ std::string TSOStorageSubsystem::get_printable_state() {
     return ss.str();
 }
 
-
-std::map<std::string, int> TSOStorageSubsystem::get_storage() {
-    std::map<std::string, int> result;
-    
-    for (auto& [ location_name, value ] : m_memory) {
-        result.insert({ std::string(location_name), value });
-    }
-
-    return result;
+void TSOStorageSubsystem::finish() {
+    flush_all_buffers();
 }
 
+std::vector <std::unique_ptr<StorageSubsystem>> TSOStorageSubsystem::get_eps_transitions(int thread_id) const {
+    std::vector <std::unique_ptr<StorageSubsystem>> results;
+
+    if (has_eps_transitions(thread_id)) {
+        TSOStorageSubsystem* new_storage = new TSOStorageSubsystem(*this);
+        new_storage->propagate(thread_id);
+
+        results.push_back(std::unique_ptr<StorageSubsystem> (new_storage));
+    }
+
+    return results;
+}
+
+StorageSubsystem* TSOStorageSubsystem::make_copy() const {
+    return new TSOStorageSubsystem(*this);
+}
 
 bool TSOStorageSubsystem::has_eps_transitions(int thread_id) const {
     return m_store_buffers.count(thread_id);

@@ -12,7 +12,7 @@ set(TESTS_TARGET tests)
 
 #### compile options for all targets
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
-    add_compile_options(-Wall -Wextra -Werror) # why these cause the build crash -fsanitize=address -fsanitize=leak ?
+    add_compile_options() #-Wall -Wextra -Werror # why these cause the build crash -fsanitize=address -fsanitize=leak ?
 elseif (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     add_compile_options(/W4 /WX)
 endif()
@@ -21,13 +21,18 @@ set(SIMULATOR_SRCS
     src/file-reader/file-reader.cpp
     src/file-reader/file-reader.h
 
+    src/args-parser/args-parser.h
+
     src/exceptions/exceptions.h
     
     src/utils/utils.cpp
     src/utils/utils.h
 
-    src/utils/node-stringifier.cpp
-    src/utils/node-stringifier.h
+    src/utils/node-stringifier/node-stringifier.cpp
+    src/utils/node-stringifier/node-stringifier.h
+    
+    src/utils/node-evaluator/node-evaluator.cpp
+    src/utils/node-evaluator/node-evaluator.h
 
     src/parser/parser.cpp
     src/parser/parser.h
@@ -46,6 +51,23 @@ set(SIMULATOR_SRCS
     src/interpreter/interpreter.cpp
     src/interpreter/interpreter.h
 
+    src/interpreter/non-deterministic/non-deterministic.cpp
+    src/interpreter/non-deterministic/non-deterministic.h
+    
+    src/interpreter/tracing/tracing.cpp
+    src/interpreter/tracing/tracing.h
+    
+    src/interpreter/interactive/interactive.cpp
+    src/interpreter/interactive/interactive.h
+    src/interpreter/interactive/interactive-cli.cpp
+    src/interpreter/interactive/interactive-cli.h
+    
+    src/interpreter/model-checking/model-checking.cpp
+    src/interpreter/model-checking/model-checking.h
+
+    src/state/program-state.cpp
+    src/state/program-state.h
+
     src/thread-subsystem/thread-subsystem.cpp
     src/thread-subsystem/thread-subsystem.h
     
@@ -60,6 +82,9 @@ set(SIMULATOR_SRCS
     
     src/storage-subsystem/pso/pso-storage-subsystem.cpp
     src/storage-subsystem/pso/pso-storage-subsystem.h
+    
+    src/storage-subsystem/sra/sra-storage-subsystem.cpp
+    src/storage-subsystem/sra/sra-storage-subsystem.h
 
     # ast nodes
     src/ast/node.h

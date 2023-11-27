@@ -5,6 +5,8 @@
 
 namespace wmm_simulator {
 
+class ProgramState;
+
 class AstNode;
 class ProgramNode;
 class StatementNode;
@@ -23,21 +25,21 @@ class ThreadGotoNode;
 
 class Visitor {
 public:
-    virtual void visit(const AstNode*) {}
-    virtual void visit(const ProgramNode*) {}
-    virtual void visit(const StatementNode*) {}
-    virtual void visit(const GotoNode*) {}
-    virtual void visit(const ThreadGotoNode*) {}
-    virtual void visit(const AssignmentNode*) {}
-    virtual void visit(const NumberNode*) {}
-    virtual void visit(const BinOpNode*) {}
-    virtual void visit(const ConditionNode*) {}
-    virtual void visit(const LoadNode*) {}
-    virtual void visit(const StoreNode*) {}
-    virtual void visit(const CasNode*) {}
-    virtual void visit(const FaiNode*) {}
-    virtual void visit(const FenceNode*) {}
-    virtual void visit(const EndNode*) {}
+    virtual void visit(const AstNode*, ProgramState*) {}
+    virtual void visit(const ProgramNode*, ProgramState*) {}
+    virtual void visit(const StatementNode*, ProgramState*) {}
+    virtual void visit(const GotoNode*, ProgramState*) {}
+    virtual void visit(const ThreadGotoNode*, ProgramState*) {}
+    virtual void visit(const AssignmentNode*, ProgramState*) {}
+    virtual void visit(const NumberNode*, ProgramState*) {}
+    virtual void visit(const BinOpNode*, ProgramState*) {}
+    virtual void visit(const ConditionNode*, ProgramState*) {}
+    virtual void visit(const LoadNode*, ProgramState*) {}
+    virtual void visit(const StoreNode*, ProgramState*) {}
+    virtual void visit(const CasNode*, ProgramState*) {}
+    virtual void visit(const FaiNode*, ProgramState*) {}
+    virtual void visit(const FenceNode*, ProgramState*) {}
+    virtual void visit(const EndNode*, ProgramState*) {}
 };
 
 }

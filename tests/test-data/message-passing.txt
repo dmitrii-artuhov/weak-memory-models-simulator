@@ -3,12 +3,12 @@ thread_goto T2
 goto END
 
 T1: r = 1
-store RLX #x r
-store RLX #y r
+store REL #x r
+store REL #y r
 goto END
 
-T2: load RLX #y a
-load RLX #x b
+T2: load ACQ #y a
+load ACQ #x b
 goto END
 
 END:

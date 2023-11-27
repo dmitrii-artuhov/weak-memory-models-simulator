@@ -18,7 +18,7 @@ public:
     };
 
     BinOpNode(std::string left_register, Type operation, std::string right_register);
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
 
     const std::string_view get_left_register() const;
     const std::string_view get_right_register() const;

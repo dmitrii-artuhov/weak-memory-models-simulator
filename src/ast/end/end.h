@@ -10,7 +10,7 @@ namespace wmm_simulator {
 class EndNode final : public AstNode {
 public:
     EndNode();
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
 };
 
 }

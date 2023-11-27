@@ -13,7 +13,7 @@ namespace wmm_simulator {
 class LoadNode final : public AstNode {
 public:
     LoadNode(MemoryOrder memory_order, std::string location_name, std::string register_name);
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
 
     MemoryOrder get_memory_order() const;
     const std::string_view get_location_name() const;

@@ -7,8 +7,8 @@ namespace wmm_simulator {
 
 StatementNode::StatementNode(std::shared_ptr<AstNode> statement, std::string label): m_statement(statement), m_label(std::move(label)) {}
 
-void StatementNode::accept(Visitor* visitor) const {
-    visitor->visit(this);
+void StatementNode::accept(Visitor* visitor, ProgramState* state) const {
+    visitor->visit(this, state);
 }
 
 const std::string_view StatementNode::get_label() const {

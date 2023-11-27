@@ -11,8 +11,8 @@ LoadNode::LoadNode(
     std::string register_name
 ): m_memory_order(memory_order), m_location_name(location_name), m_register_name(register_name) {}
 
-void LoadNode::accept(Visitor* visitor) const {
-    visitor->visit(this);
+void LoadNode::accept(Visitor* visitor, ProgramState* state) const {
+    visitor->visit(this, state);
 }
 
 MemoryOrder LoadNode::get_memory_order() const {

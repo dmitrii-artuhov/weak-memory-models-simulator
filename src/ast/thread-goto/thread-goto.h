@@ -11,7 +11,7 @@ namespace wmm_simulator {
 class ThreadGotoNode final : public AstNode {
 public:
     ThreadGotoNode(std::string thread_goto_label);
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
     
     const std::string_view get_thread_start_label() const;
 

@@ -9,8 +9,8 @@ ConditionNode::ConditionNode(
     std::string goto_label
 ): m_register_name(std::move(register_node)), m_goto_label(std::move(goto_label)) {}
 
-void ConditionNode::accept(Visitor* visitor) const {
-    visitor->visit(this);
+void ConditionNode::accept(Visitor* visitor, ProgramState* state) const {
+    visitor->visit(this, state);
 }
 
 const std::string_view ConditionNode::get_register_name() const {

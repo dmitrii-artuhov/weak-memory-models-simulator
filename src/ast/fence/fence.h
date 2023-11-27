@@ -13,7 +13,7 @@ namespace wmm_simulator {
 class FenceNode final : public AstNode {
 public:
     FenceNode(MemoryOrder memory_order);
-    void accept(Visitor* visitor) const override;
+    void accept(Visitor* visitor, ProgramState* state) const override;
 
     MemoryOrder get_memory_order() const;
 

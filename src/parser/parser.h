@@ -85,7 +85,7 @@ private:
     public:
         LabeledInstructionsRetriever(AstNode* node);
         std::unordered_map<std::string_view, int> get_labeled_instructions();
-        void visit(const ProgramNode* node) override;
+        void visit(const ProgramNode* node, ProgramState*) override;
 
     private:
         AstNode* m_node;
