@@ -85,7 +85,7 @@ To run the `simulator` you have to pass some arguments:
     ```
 
     Running program with TSO memory model in model-checking mode:
-    ```js
+    ```txt
     > ./simulator --file ../tests/test-data/store-buffering.txt --mm tso --it mc
 
     =========== Memory state ===========
@@ -201,7 +201,7 @@ To run the `simulator` you have to pass some arguments:
     ```
 
     Running program with Strong RA memory model in model-checking mode:
-    ```js
+    ```txt
     > ./simulator --file ../tests/test-data/message-passing.txt --mm sra --it mc
 
     =========== Memory state ===========
@@ -346,7 +346,7 @@ To run the `simulator` you have to pass some arguments:
     ```
 
     And run again with the same arguments:
-    ```js
+    ```txt
     ...
     Total states generated: 2642
     Final states count (unique in terms of thread subsystems states): 3
