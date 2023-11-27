@@ -120,18 +120,6 @@ StorageSubsystem* TSOStorageSubsystem::make_copy() const {
     return new TSOStorageSubsystem(*this);
 }
 
-
-std::map<std::string, int> TSOStorageSubsystem::get_storage() {
-    std::map<std::string, int> result;
-    
-    for (auto& [ location_name, value ] : m_memory) {
-        result.insert({ std::string(location_name), value });
-    }
-
-    return result;
-}
-
-
 bool TSOStorageSubsystem::has_eps_transitions(int thread_id) const {
     return m_store_buffers.count(thread_id);
 }

@@ -3,6 +3,10 @@
 #include <cctype>
 #include <string>
 
+#include "lang/keywords.h"
+#include "lang/memory-order.h"
+#include "ast/binop/binop.h"
+
 namespace wmm_simulator::utils {
 
 bool is_space(char c) {
@@ -21,7 +25,6 @@ bool is_newline(char c) {
     return c == '\n';
 }
 
-
 bool is_digit(char c) {
     switch (c) {
         case '0':
@@ -39,7 +42,6 @@ bool is_digit(char c) {
             return false;
     }
 }
-
 
 bool is_identifier_char(char c) {
     switch (c) {
@@ -137,6 +139,29 @@ std::string trim(std::string_view str) {
 
     // Extract the substring without leading and trailing whitespaces
     return std::string(str.substr(start, end - start));
+}
+
+std::string get_binop(BinOpNode::Type type) {
+    switch (type) {
+        case BinOpNode::Type::PLUS: return "+";
+        case BinOpNode::Type::MINUS: return "-";
+        case BinOpNode::Type::MULT: return "*";
+        case BinOpNode::Type::DIV: return "/";
+    }
+
+    return "?";
+}
+
+std::string get_memory_order(MemoryOrder order) {
+    switch (order) {
+        case MemoryOrder::SEQUENTIALLY_CONSISTENT: return Keyword::SEQ_CST;
+        case MemoryOrder::ACQUIRE: return Keyword::ACQ;
+        case MemoryOrder::RELEASE: return Keyword::REL;
+        case MemoryOrder::RELEASE_ACQUIRE: return Keyword::REL_ACQ;
+        case MemoryOrder::RELAXED: return Keyword::RLX;
+    }
+
+    return "?";
 }
 
 }

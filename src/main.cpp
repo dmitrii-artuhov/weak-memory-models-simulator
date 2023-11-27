@@ -18,18 +18,15 @@
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
+#include "storage-subsystem/sra/sra-storage-subsystem.h"
 
 int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] const char* argv[]) {
     using namespace wmm_simulator;
-    static const std::string USAGE = "USAGE: " + std::string(argv[0]) + " --file [path/to/program] [--mm [memory model|sc, tso, pso] --it [interpreter type|nd, tr, mc, i]]";
+    static const std::string USAGE = "USAGE: " + std::string(argv[0]) + " --file [path/to/program] [--mm [memory model|sc, tso, pso, sra] --it [interpreter type|nd, tr, mc, i]]";
 
     try {
-        if (argc < 2) {
-            throw exceptions::invalid_arguments(USAGE);
-        }
-
         struct ProgramOptions {
-            std::string program_path;
+            std::string program_path = "";
             std::string memory_model = "sc";
             std::string interpreter_type = "nd";
         };
@@ -58,9 +55,10 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] const char* argv[]) {
         if (
             opts.memory_model != "sc" &&
             opts.memory_model != "tso" &&
-            opts.memory_model != "pso"
+            opts.memory_model != "pso" &&
+            opts.memory_model != "sra"
         ) {
-            throw exceptions::invalid_arguments("Memory model type must be one of: sc, tso, pso");
+            throw exceptions::invalid_arguments("Memory model type must be one of: sc, tso, pso, sra");
         }
 
         std::cout << "Program path: " << opts.program_path << std::endl;
@@ -80,30 +78,34 @@ int main([[ maybe_unused ]] int argc, [[ maybe_unused ]] const char* argv[]) {
             std::unordered_map<std::string_view, int>
         > parse_result = parser.parse();
 
-
+        // I know that code below sucks. But there are no virtual template methods, so it stays until I think of smth else
         if (opts.interpreter_type == "nd") {
             NonDeterministicInterpreter interpreter(parse_result.first, parse_result.second);
             if (opts.memory_model == "sc") interpreter.run<SCStorageSubsystem>();
             else if (opts.memory_model == "tso") interpreter.run<TSOStorageSubsystem>();
             else if (opts.memory_model == "pso") interpreter.run<PSOStorageSubsystem>();
+            else if (opts.memory_model == "sra") interpreter.run<SRAStorageSubsystem>();
         }
         else if (opts.interpreter_type == "tr") {
             TracingInterpreter interpreter(parse_result.first, parse_result.second);
             if (opts.memory_model == "sc") interpreter.run<SCStorageSubsystem>();
             else if (opts.memory_model == "tso") interpreter.run<TSOStorageSubsystem>();
             else if (opts.memory_model == "pso") interpreter.run<PSOStorageSubsystem>();
+            else if (opts.memory_model == "sra") interpreter.run<SRAStorageSubsystem>();
         }
         else if (opts.interpreter_type == "mc") {
             ModelCheckingInterpreter interpreter(parse_result.first, parse_result.second);
             if (opts.memory_model == "sc") interpreter.run<SCStorageSubsystem>();
             else if (opts.memory_model == "tso") interpreter.run<TSOStorageSubsystem>();
             else if (opts.memory_model == "pso") interpreter.run<PSOStorageSubsystem>();
+            else if (opts.memory_model == "sra") interpreter.run<SRAStorageSubsystem>();
         }
         else if (opts.interpreter_type == "i") {
             InteractiveInterpreter interpreter(parse_result.first, parse_result.second);
             if (opts.memory_model == "sc") interpreter.run<SCStorageSubsystem>();
             else if (opts.memory_model == "tso") interpreter.run<TSOStorageSubsystem>();
             else if (opts.memory_model == "pso") interpreter.run<PSOStorageSubsystem>();
+            else if (opts.memory_model == "sra") interpreter.run<SRAStorageSubsystem>();
         }
     }
     catch(const std::runtime_error& err) {

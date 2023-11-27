@@ -12,6 +12,7 @@
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
+#include "storage-subsystem/sra/sra-storage-subsystem.h"
 
 
 namespace wmm_simulator {
@@ -53,5 +54,6 @@ void NonDeterministicInterpreter::run() {
 template void NonDeterministicInterpreter::run<SCStorageSubsystem>();
 template void NonDeterministicInterpreter::run<TSOStorageSubsystem>();
 template void NonDeterministicInterpreter::run<PSOStorageSubsystem>();
+template void NonDeterministicInterpreter::run<SRAStorageSubsystem>();
 
 }

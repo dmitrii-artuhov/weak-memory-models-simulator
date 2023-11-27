@@ -35,7 +35,6 @@ public:
 
     StorageSubsystem* make_copy() const override;
     std::string get_printable_state() override;
-    std::map<std::string, int> get_storage() override;
 
     bool has_eps_transitions(int thread_id) const;
     const std::vector <std::string_view> get_propagate_locations(int thread_id) const;

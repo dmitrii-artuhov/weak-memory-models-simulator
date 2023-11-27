@@ -122,16 +122,6 @@ std::string PSOStorageSubsystem::get_printable_state() {
     return ss.str();
 }
 
-std::map<std::string, int> PSOStorageSubsystem::get_storage() {
-    std::map<std::string, int> result;
-    
-    for (auto& [ location_name, value ] : m_memory) {
-        result.insert({ std::string(location_name), value });
-    }
-
-    return result;
-}
-
 bool PSOStorageSubsystem::has_eps_transitions(int thread_id) const {
     return m_store_buffers.count(thread_id);
 }

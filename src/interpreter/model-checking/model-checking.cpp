@@ -11,6 +11,7 @@
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
+#include "storage-subsystem/sra/sra-storage-subsystem.h"
 #include "utils/node-evaluator/node-evaluator.h"
 #include "utils/node-stringifier/node-stringifier.h"
 
@@ -56,37 +57,17 @@ void ModelCheckingInterpreter::run() {
             });
 
             if (it == final_states.end()) {
-                // std::cout << "New final state:" << std::endl;
-                // std::cout << state.storage->get_printable_state() << std::endl;
-                // if (state.threads.count(state.current_thread_id)) {
-                //     std::cout << "Registers: " << std::endl << state.threads[state.current_thread_id].thread_subsystem.get_printable_state() << std::endl;
-                // }
-
                 final_states.push_back(state);
             }
 
             continue;
         }
 
-        // here we want to disallow branching from finished thread
-        // if (!state.threads.count(state.current_thread_id)) {
-        //     continue;
-        // }
-
-        // if (state.threads.count(state.current_thread_id)) {
-        //     // std::cout << "t " << state.current_thread_id
-        //     //     << "> current instruction: "
-        //     //     << state.threads[state.current_thread_id].instruction_index + 1
-        //     //     << "/" << get_ast()->get_statements().size() << std::endl;
-        // }
-
         if (state.is_interleaving_possible()) {
             auto thread_ids = state.get_active_threads_ids();
 
             for (int new_active_thread_id : thread_ids) {
                 if (state.current_thread_id == new_active_thread_id) continue;
-
-                // std::cout << "New next state: interleave from " << state.current_thread_id << " to " << new_active_thread_id << std::endl;
 
                 auto new_state = ProgramState(state);
                 new_state.is_allowed_interleaving = false;
@@ -99,35 +80,22 @@ void ModelCheckingInterpreter::run() {
 
         if (state.has_eps_transitions()) {
             auto eps_transition_states = state.get_eps_transition_states();
-            // std::cout << "t " << state.current_thread_id << "> " << "Add new eps transition states (count): " << eps_transition_states.size() << std::endl;
-
             for (auto& new_state : eps_transition_states) {
                 new_state.is_allowed_interleaving = true;
                 states.push(new_state);
             }
         }
 
-        // std::cout << "t " << state.current_thread_id << "> " << "Add new regular transition state" << std::endl;
         auto next_state = state.get_transition_state();
-        // if (state.threads.at(state.current_thread_id).instruction_index == 11) {
-        //     // std::cout << "Prev step had last instruction, non-finished threads afterwards: " << std::endl;
-        //     for (auto [ thread_id, data ] : next_state.threads) {
-        //         std::cout << "{" << thread_id << ": " << data.instruction_index << "}" << ' ';
-        //     }
-        //     std::cout << std::endl;
-        // }
-        // next_state.is_allowed_interleaving = true;
         states.push(next_state);
-
-        // std::cout << "Total states modelings: " << states.size() << ", final states found: " << final_states.size() << std::endl;
     }
-
-    std::cout << "Total states generated: " << i << std::endl;
-    std::cout << "Final states count (unique thread subsystems states): " << final_states.size() << std::endl;
 
     for (const auto& final_state : final_states) {
         print_state(final_state);
     }
+    
+    std::cout << "Total states generated: " << i << std::endl;
+    std::cout << "Final states count (unique in terms of thread subsystems states): " << final_states.size() << std::endl;
 }
 
 void ModelCheckingInterpreter::visit(const StatementNode* node, ProgramState* state) {
@@ -140,5 +108,6 @@ void ModelCheckingInterpreter::visit(const StatementNode* node, ProgramState* st
 template void ModelCheckingInterpreter::run<SCStorageSubsystem>();
 template void ModelCheckingInterpreter::run<TSOStorageSubsystem>();
 template void ModelCheckingInterpreter::run<PSOStorageSubsystem>();
+template void ModelCheckingInterpreter::run<SRAStorageSubsystem>();
 
 }

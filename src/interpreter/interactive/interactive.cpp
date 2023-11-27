@@ -7,6 +7,7 @@
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
+#include "storage-subsystem/sra/sra-storage-subsystem.h"
 
 namespace wmm_simulator {
 
@@ -28,7 +29,7 @@ void InteractiveInterpreter::run() {
             (!state.threads.count(state.current_thread_id) || cli.should_change_thread(*this, state))
         ) {
             int new_thread_id = cli.get_new_thread_id(state /* excludes current_thread_id */);
-           std::cout << get_log_prefix(state.current_thread_id) << "interleave to thread: " << new_thread_id << std::endl;
+            std::cout << get_log_prefix(state.current_thread_id) << "interleave to thread: " << new_thread_id << std::endl;
 
             state = state.get_interleaving_state(new_thread_id);
         }
@@ -65,5 +66,6 @@ void InteractiveInterpreter::run() {
 template void InteractiveInterpreter::run<SCStorageSubsystem>();
 template void InteractiveInterpreter::run<TSOStorageSubsystem>();
 template void InteractiveInterpreter::run<PSOStorageSubsystem>();
+template void InteractiveInterpreter::run<SRAStorageSubsystem>();
 
 }

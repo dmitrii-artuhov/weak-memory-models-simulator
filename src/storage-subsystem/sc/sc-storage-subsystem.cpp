@@ -59,14 +59,4 @@ std::string SCStorageSubsystem::get_printable_state() {
     return ss.str();
 }
 
-std::map<std::string, int> SCStorageSubsystem::get_storage() {
-    std::map<std::string, int> result;
-
-    for (auto [ loc, val ] : m_memory) {
-        result.insert({ std::string(loc), val });
-    }
-
-    return result;
-}
-
 }

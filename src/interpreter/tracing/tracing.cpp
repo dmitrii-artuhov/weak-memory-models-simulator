@@ -12,6 +12,7 @@
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
+#include "storage-subsystem/sra/sra-storage-subsystem.h"
 
 
 namespace wmm_simulator {
@@ -77,5 +78,6 @@ std::string TracingInterpreter::get_log_prefix(int thread_id) const {
 template void TracingInterpreter::run<SCStorageSubsystem>();
 template void TracingInterpreter::run<TSOStorageSubsystem>();
 template void TracingInterpreter::run<PSOStorageSubsystem>();
+template void TracingInterpreter::run<SRAStorageSubsystem>();
 
 }

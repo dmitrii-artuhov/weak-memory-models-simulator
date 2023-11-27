@@ -10,6 +10,7 @@
 #include "storage-subsystem/sc/sc-storage-subsystem.h"
 #include "storage-subsystem/tso/tso-storage-subsystem.h"
 #include "storage-subsystem/pso/pso-storage-subsystem.h"
+#include "storage-subsystem/sra/sra-storage-subsystem.h"
 
 namespace wmm_simulator {
 
@@ -126,6 +127,43 @@ ProgramState InteractiveCli<PSOStorageSubsystem>::get_new_eps_transition_state(c
     return state;
 }
 
+
+
+template<>
+ProgramState InteractiveCli<SRAStorageSubsystem>::get_new_eps_transition_state(const ProgramState& state) const {
+    // TODO: implement choosing location for propagation
+    std::cout << "SRA Storage subsystem can choose on what location to run propagation" << std::endl;
+    SRAStorageSubsystem* sra_storage = static_cast<SRAStorageSubsystem*>(state.storage.get());
+
+    const auto locations = sra_storage->get_increase_locations(state.current_thread_id);
+    std::cout << "* Choose location for eps-transition. Available locations: [";
+    for (size_t i = 0; i < locations.size(); ++i) {
+        auto loc = locations[i];
+
+        std::cout << loc;
+        if (i != locations.size() - 1) std::cout << ", ";
+    }
+    std::cout << "]" << std::endl;
+
+    std::string chosen_location;
+    print_caret();
+    while (std::getline(std::cin, chosen_location)) {
+        chosen_location = utils::trim(chosen_location);
+        std::cout << "Chosen location: '" << chosen_location << "'" << std::endl;
+        
+        if (std::find(locations.begin(), locations.end(), chosen_location) == locations.end()) {
+            std::cout << "Invalid input: '" << chosen_location << "' does not exist. Try again." << std::endl;
+            print_caret();
+        }
+        else {
+            break;
+        }
+    }
+
+    sra_storage->increase_location_local_timestamp(state.current_thread_id, chosen_location);
+    return state;
+}
+
 template<class T>
 void InteractiveCli<T>::print_caret() {
     std::cout << "> ";
@@ -161,5 +199,6 @@ bool InteractiveCli<T>::get_yes_no() const {
 template class InteractiveCli<SCStorageSubsystem>;
 template class InteractiveCli<TSOStorageSubsystem>;
 template class InteractiveCli<PSOStorageSubsystem>;
+template class InteractiveCli<SRAStorageSubsystem>;
 
 }

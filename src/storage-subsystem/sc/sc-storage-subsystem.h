@@ -30,7 +30,6 @@ public:
     StorageSubsystem* make_copy() const override;
 
     std::string get_printable_state() override;
-    std::map<std::string, int> get_storage() override;
 
 private:
     std::map<std::string, int> m_memory; // { location name, value }

@@ -60,6 +60,7 @@ void ProgramState::add_thread(int instruction_index) {
         instruction_index,
         ThreadSubsystem()
     };
+    storage->prepare_thread(next_thread_id);
     next_thread_id++;
 }
 

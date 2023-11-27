@@ -46,8 +46,8 @@ public:
 private:
     std::stringstream m_stream;
 
-    std::string get_binop(BinOpNode::Type type) const;
-    std::string get_memory_order(MemoryOrder order) const;
+    // std::string get_binop(BinOpNode::Type type) const;
+    // std::string get_memory_order(MemoryOrder order) const;
 };
 
 }

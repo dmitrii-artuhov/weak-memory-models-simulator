@@ -39,7 +39,6 @@ public:
     bool has_eps_transitions(int thread_id) const override;
     
     std::string get_printable_state() override;
-    std::map<std::string, int> get_storage() override;
     
     void propagate(int thread_id);
     void flush_all_buffers();
