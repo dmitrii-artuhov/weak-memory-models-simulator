@@ -327,7 +327,7 @@ To run the `simulator` you have to pass some arguments:
     Final states count (unique in terms of thread subsystems states): 4    
     ```
 
-    Let's modify the code by adding memory order for all writes and acquire for all reads:
+    Let's modify the code by adding release memory order for all writes and acquire for all reads:
     ```js
     thread_goto T1
     thread_goto T2
