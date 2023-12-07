@@ -55,7 +55,7 @@ Program supports 4 modes of executions:
 - `cmake .. && make`
 
 ## Running
-After building the project there will be 2 targets generated: `tests` (*for now only has tests on lexer, I will cover the rest later*) and `simulator`.
+After building the project there will be 2 targets generated: `tests` (*for now only has tests on lexer and parser, I will cover the rest later*) and `simulator`.
 
 To run the `simulator` you have to pass some arguments:
 - `--file`: path to file containing program code.
