@@ -18,7 +18,7 @@
 namespace wmm_simulator {
 
 template<class T>
-void TracingInterpreter::run() {
+std::vector<ProgramState> TracingInterpreter::run() {
     static_assert(
         std::is_base_of<StorageSubsystem, T>::value,
         "T must be a class derived from `StorageSubsystem`."
@@ -63,6 +63,8 @@ void TracingInterpreter::run() {
     std::cout << "Program finished" << std::endl;
 
     print_state(state);
+
+    return { state };
 }
 
 void TracingInterpreter::visit(const StatementNode* node, ProgramState* state) {
@@ -75,9 +77,9 @@ std::string TracingInterpreter::get_log_prefix(int thread_id) const {
     return "t " + std::to_string(thread_id) + "> ";
 }
 
-template void TracingInterpreter::run<SCStorageSubsystem>();
-template void TracingInterpreter::run<TSOStorageSubsystem>();
-template void TracingInterpreter::run<PSOStorageSubsystem>();
-template void TracingInterpreter::run<SRAStorageSubsystem>();
+template std::vector<ProgramState> TracingInterpreter::run<SCStorageSubsystem>();
+template std::vector<ProgramState> TracingInterpreter::run<TSOStorageSubsystem>();
+template std::vector<ProgramState> TracingInterpreter::run<PSOStorageSubsystem>();
+template std::vector<ProgramState> TracingInterpreter::run<SRAStorageSubsystem>();
 
 }

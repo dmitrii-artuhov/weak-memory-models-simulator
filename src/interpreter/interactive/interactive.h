@@ -10,7 +10,7 @@ public:
     using TracingInterpreter::TracingInterpreter;
 
     template<class T>
-    void run();
+    std::vector<ProgramState> run();
 };
 
 }

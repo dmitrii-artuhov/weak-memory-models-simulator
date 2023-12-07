@@ -18,7 +18,7 @@
 namespace wmm_simulator {
 
 template<class T>
-void ModelCheckingInterpreter::run() {
+std::vector<ProgramState> ModelCheckingInterpreter::run() {
     static_assert(
         std::is_base_of<StorageSubsystem, T>::value,
         "T must be a class derived from `StorageSubsystem`."
@@ -33,7 +33,7 @@ void ModelCheckingInterpreter::run() {
     states.push(initial_state);
     int i = 0;
 
-    while (!states.empty()) { // && i++ < 40
+    while (!states.empty()) {
         i++;
         auto state = states.front();
         states.pop();
@@ -96,6 +96,8 @@ void ModelCheckingInterpreter::run() {
     
     std::cout << "Total states generated: " << i << std::endl;
     std::cout << "Final states count (unique in terms of thread subsystems states): " << final_states.size() << std::endl;
+
+    return final_states;
 }
 
 void ModelCheckingInterpreter::visit(const StatementNode* node, ProgramState* state) {
@@ -105,9 +107,9 @@ void ModelCheckingInterpreter::visit(const StatementNode* node, ProgramState* st
 }
 
 
-template void ModelCheckingInterpreter::run<SCStorageSubsystem>();
-template void ModelCheckingInterpreter::run<TSOStorageSubsystem>();
-template void ModelCheckingInterpreter::run<PSOStorageSubsystem>();
-template void ModelCheckingInterpreter::run<SRAStorageSubsystem>();
+template std::vector<ProgramState> ModelCheckingInterpreter::run<SCStorageSubsystem>();
+template std::vector<ProgramState> ModelCheckingInterpreter::run<TSOStorageSubsystem>();
+template std::vector<ProgramState> ModelCheckingInterpreter::run<PSOStorageSubsystem>();
+template std::vector<ProgramState> ModelCheckingInterpreter::run<SRAStorageSubsystem>();
 
 }

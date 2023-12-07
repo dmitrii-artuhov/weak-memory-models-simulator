@@ -12,7 +12,7 @@
 namespace wmm_simulator {
 
 template<class T>
-void InteractiveInterpreter::run() {
+std::vector<ProgramState> InteractiveInterpreter::run() {
     static_assert(
         std::is_base_of<StorageSubsystem, T>::value,
         "T must be a class derived from `StorageSubsystem`."
@@ -60,12 +60,13 @@ void InteractiveInterpreter::run() {
     std::cout << "Program finished" << std::endl;
 
     print_state(state);
+    return { state };
 };
 
 
-template void InteractiveInterpreter::run<SCStorageSubsystem>();
-template void InteractiveInterpreter::run<TSOStorageSubsystem>();
-template void InteractiveInterpreter::run<PSOStorageSubsystem>();
-template void InteractiveInterpreter::run<SRAStorageSubsystem>();
+template std::vector<ProgramState> InteractiveInterpreter::run<SCStorageSubsystem>();
+template std::vector<ProgramState> InteractiveInterpreter::run<TSOStorageSubsystem>();
+template std::vector<ProgramState> InteractiveInterpreter::run<PSOStorageSubsystem>();
+template std::vector<ProgramState> InteractiveInterpreter::run<SRAStorageSubsystem>();
 
 }

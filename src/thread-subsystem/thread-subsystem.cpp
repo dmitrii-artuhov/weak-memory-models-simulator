@@ -6,11 +6,11 @@
 namespace wmm_simulator {
 
 void ThreadSubsystem::set(std::string_view register_name, int value) {
-    m_store[register_name] = value;
+    m_store[register_name.data()] = value;
 }
 
 int ThreadSubsystem::get(std::string_view register_name) const {
-    return m_store.at(register_name);    
+    return m_store.at(register_name.data());    
 }
 
 std::string ThreadSubsystem::get_printable_state() const {

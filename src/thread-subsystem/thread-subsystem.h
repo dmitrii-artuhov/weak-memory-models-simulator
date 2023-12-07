@@ -8,7 +8,7 @@ namespace wmm_simulator {
 
 class ThreadSubsystem {
 private:
-    std::map<std::string_view, int> m_store; // { register, value }
+    std::map<std::string, int> m_store; // { register, value }
 
 public:
     void set(std::string_view register_name, int value);

@@ -10,7 +10,7 @@ public:
     using Interpreter::Interpreter;
 
     template<class T>
-    void run();
+    std::vector<ProgramState> run();
 
     void visit(const StatementNode* node, ProgramState* state) override;
 

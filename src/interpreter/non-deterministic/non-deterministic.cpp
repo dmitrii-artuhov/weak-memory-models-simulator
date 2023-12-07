@@ -18,7 +18,7 @@
 namespace wmm_simulator {
 
 template<class T>
-void NonDeterministicInterpreter::run() {
+std::vector<ProgramState> NonDeterministicInterpreter::run() {
     static_assert(
         std::is_base_of<StorageSubsystem, T>::value,
         "T must be a class derived from `StorageSubsystem`."
@@ -49,11 +49,13 @@ void NonDeterministicInterpreter::run() {
 
     state.storage->flush();
     print_state(state);
+
+    return { state };
 }
 
-template void NonDeterministicInterpreter::run<SCStorageSubsystem>();
-template void NonDeterministicInterpreter::run<TSOStorageSubsystem>();
-template void NonDeterministicInterpreter::run<PSOStorageSubsystem>();
-template void NonDeterministicInterpreter::run<SRAStorageSubsystem>();
+template std::vector<ProgramState> NonDeterministicInterpreter::run<SCStorageSubsystem>();
+template std::vector<ProgramState> NonDeterministicInterpreter::run<TSOStorageSubsystem>();
+template std::vector<ProgramState> NonDeterministicInterpreter::run<PSOStorageSubsystem>();
+template std::vector<ProgramState> NonDeterministicInterpreter::run<SRAStorageSubsystem>();
 
 }

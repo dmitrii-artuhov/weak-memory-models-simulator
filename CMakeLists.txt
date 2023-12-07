@@ -133,8 +133,13 @@ set(SIMULATOR_SRCS
 )
 
 set(TESTS_SRCS
+    tests/common.h
     tests/test-lexer.cpp
     tests/test-parser.cpp
+    tests/test-sc.cpp
+    tests/test-tso.cpp
+    tests/test-pso.cpp
+    tests/test-sra.cpp
     ${SIMULATOR_SRCS}
 )
 
