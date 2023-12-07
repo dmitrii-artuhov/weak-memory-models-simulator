@@ -31,7 +31,7 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) override;
-    void finish() override;
+    void flush() override;
 
     std::vector <std::unique_ptr<StorageSubsystem>> get_eps_transitions(int thread_id) const override;
 
@@ -50,7 +50,7 @@ private:
         std::deque<std::pair<std::string, int>>
     > m_store_buffers; // { thread_id, { location name, value } }
 
-    void flush(int thread_id);
+    void flush_buffer(int thread_id);
 };
 
 }

@@ -40,7 +40,7 @@ void ModelCheckingInterpreter::run() {
 
         // final state found
         if (!state.has_active_threads()) {
-            state.storage->finish();
+            state.storage->flush();
 
             // TODO: add comparison for StorageSubsystems as well
             auto it = std::find_if(final_states.begin(), final_states.end(), [&](const ProgramState& curr) {

@@ -47,7 +47,7 @@ void NonDeterministicInterpreter::run() {
         }
     }
 
-    state.storage->finish();
+    state.storage->flush();
     print_state(state);
 }
 

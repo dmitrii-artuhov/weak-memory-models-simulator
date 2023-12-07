@@ -198,6 +198,8 @@ void Interpreter::visit(const CasNode* node, ProgramState* state) {
     int expected = thread_subsystem.get(node->get_expected_register());
     int desired = thread_subsystem.get(node->get_desired_register());
 
+    state->storage->flush();
+
     int actual = state->storage->read(
         current_thread_id,
         location_name,
@@ -225,6 +227,8 @@ void Interpreter::visit(const FaiNode* node, ProgramState* state) {
     int current_thread_id = state->current_thread_id;
 
     int increment = state->threads[current_thread_id].thread_subsystem.get(register_name);
+    
+    state->storage->flush();
     
     int previous_value = state->storage->read(
         current_thread_id,

@@ -27,12 +27,12 @@ public:
         int thread_id,
         MemoryOrder memory_order
     ) = 0;
-    virtual void finish() {}
+    virtual void flush() {}
     virtual StorageSubsystem* make_copy() const = 0;
     virtual std::vector <std::unique_ptr<StorageSubsystem>> get_eps_transitions(int thread_id) const { return {}; }
     virtual bool has_eps_transitions(int thread_id) const { return false; }
     virtual std::string get_printable_state() = 0;
-    virtual void prepare_thread(int thread_id) {} // required to let memory know that such thread already exists (important for SRA)
+    virtual void prepare_thread(int thread_id) {} // required to spawn thread in memory subsystem before executing instructions (important for SRA)
 };
 
 }

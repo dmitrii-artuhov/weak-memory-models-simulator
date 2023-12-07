@@ -58,7 +58,7 @@ void TracingInterpreter::run() {
     }
 
     std::cout << "Flush memory" << std::endl;
-    state.storage->finish();
+    state.storage->flush();
 
     std::cout << "Program finished" << std::endl;
 

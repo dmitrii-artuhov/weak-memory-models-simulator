@@ -55,7 +55,7 @@ void TSOStorageSubsystem::write(
 
     // TODO: should any weaker memory orders perform the same?
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
-        flush(thread_id);
+        flush_buffer(thread_id);
     }
 }
 
@@ -65,7 +65,7 @@ void TSOStorageSubsystem::fence(
 ) {
     // TODO: should other memory orders be supported for fences?
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
-        flush(thread_id);
+        flush_buffer(thread_id);
     }
 }
 
@@ -99,8 +99,15 @@ std::string TSOStorageSubsystem::get_printable_state() {
     return ss.str();
 }
 
-void TSOStorageSubsystem::finish() {
-    flush_all_buffers();
+void TSOStorageSubsystem::flush() {
+    std::vector <int> thread_ids;
+    for (auto& [ thread_id, _ ] : m_store_buffers) {
+        thread_ids.push_back(thread_id);
+    }
+
+    for (int thread_id : thread_ids) {
+        flush_buffer(thread_id);
+    }
 }
 
 std::vector <std::unique_ptr<StorageSubsystem>> TSOStorageSubsystem::get_eps_transitions(int thread_id) const {
@@ -141,18 +148,7 @@ void TSOStorageSubsystem::propagate(int thread_id) {
     m_memory[location_name] = value;
 }
 
-void TSOStorageSubsystem::flush_all_buffers() {
-    std::vector <int> thread_ids;
-    for (auto& [ thread_id, _ ] : m_store_buffers) {
-        thread_ids.push_back(thread_id);
-    }
-
-    for (int thread_id : thread_ids) {
-        flush(thread_id);
-    }
-}
-
-void TSOStorageSubsystem::flush(int thread_id) {
+void TSOStorageSubsystem::flush_buffer(int thread_id) {
     if (!m_store_buffers.count(thread_id)) {
         return;
     }

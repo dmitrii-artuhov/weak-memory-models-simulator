@@ -49,7 +49,7 @@ void PSOStorageSubsystem::write(
     
     // TODO: should any weaker memory orders perform the same?
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
-        flush(thread_id);
+        flush_buffer(thread_id);
     }
 }
 
@@ -59,12 +59,19 @@ void PSOStorageSubsystem::fence(
 ) {
     // TODO: should any weaker memory orders perform the same?
     if (memory_order == MemoryOrder::SEQUENTIALLY_CONSISTENT) {
-        flush(thread_id);
+        flush_buffer(thread_id);
     }
 }
 
-void PSOStorageSubsystem::finish() {
-    flush_all_buffers();
+void PSOStorageSubsystem::flush() {
+    std::vector <int> thread_ids;
+    for (auto& [ thread_id, _ ] : m_store_buffers) {
+        thread_ids.push_back(thread_id);
+    }
+
+    for (int thread_id : thread_ids) {
+        flush_buffer(thread_id);
+    }
 }
 
 std::vector <std::unique_ptr<StorageSubsystem>> PSOStorageSubsystem::get_eps_transitions(int thread_id) const {
@@ -166,25 +173,14 @@ void PSOStorageSubsystem::propagate(int thread_id, const std::string& location_n
     m_memory[location_name] = value;
 }
 
-void PSOStorageSubsystem::flush_all_buffers() {
-    std::vector <int> thread_ids;
-    for (auto& [ thread_id, _ ] : m_store_buffers) {
-        thread_ids.push_back(thread_id);
-    }
-
-    for (int thread_id : thread_ids) {
-        flush(thread_id);
-    }
-}
-
-void PSOStorageSubsystem::flush(int thread_id) {
+void PSOStorageSubsystem::flush_buffer(int thread_id) {
     if (!m_store_buffers.count(thread_id)) {
         return;
     }
 
     auto& thread_buffer = m_store_buffers[thread_id];
     for (auto& [ location_name, q ] : thread_buffer) {
-        assert(("Queue must not be empty in flush of PSO"));
+        assert(("Queue must not be empty in flush_buffer of PSO"));
         m_memory[location_name] = q.back();
     }
 
