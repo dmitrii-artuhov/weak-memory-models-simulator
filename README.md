@@ -13,8 +13,8 @@ It has the following instructions set:
 - `if r goto L` conditional jump on label `L`.
 - `load m #x r` load value from memory by address stored in location `x` into register `r`.
 - `store m #x r` store value from register `r` into memory by location `x`.
-- `r1 := cas m #x r2 r3` compare-and-swap value in memory by location named `x`, expected value is stored in `r2`, desired value is stored in `r3`, shoud return the actually read value in register `r1`.
-- `r1 := fai m #x r2` fetch-and-increment value in memory by location `x`, the value to increment by is stored in `r2`, should return the read value prior increment in register `r1`.
+- `r1 = cas m #x r2 r3` compare-and-swap value in memory by location named `x`, expected value is stored in `r2`, desired value is stored in `r3`, shoud return the actually read value in register `r1`.
+- `r1 = fai m #x r2` fetch-and-increment value in memory by location `x`, the value to increment by is stored in `r2`, should return the read value prior increment in register `r1`.
 - `fence m` memory fence instruction.
 - `thread_goto L` create a new thread with start instruction at label `L`.
 
