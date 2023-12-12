@@ -28,6 +28,7 @@ public:
         MemoryOrder memory_order
     ) = 0;
     virtual void flush() {}
+    virtual void flush(int thread_id) {}
     virtual StorageSubsystem* make_copy() const = 0;
     virtual std::vector <std::unique_ptr<StorageSubsystem>> get_eps_transitions(int thread_id) const { return {}; }
     virtual bool has_eps_transitions(int thread_id) const { return false; }

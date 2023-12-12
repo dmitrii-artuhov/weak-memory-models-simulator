@@ -110,6 +110,10 @@ void TSOStorageSubsystem::flush() {
     }
 }
 
+void TSOStorageSubsystem::flush(int thread_id) {
+    flush_buffer(thread_id);
+}
+
 std::vector <std::unique_ptr<StorageSubsystem>> TSOStorageSubsystem::get_eps_transitions(int thread_id) const {
     std::vector <std::unique_ptr<StorageSubsystem>> results;
 

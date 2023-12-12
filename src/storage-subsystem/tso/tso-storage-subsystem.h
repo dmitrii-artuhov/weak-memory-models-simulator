@@ -32,6 +32,7 @@ public:
         MemoryOrder memory_order
     ) override;
     void flush() override;
+    void flush(int thread_id) override;
 
     std::vector <std::unique_ptr<StorageSubsystem>> get_eps_transitions(int thread_id) const override;
 
